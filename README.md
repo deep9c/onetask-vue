@@ -1,6 +1,6 @@
-# intelligent-task-manager
+# One-Task
 
-> Task manager app with chatbot installed to assist with each task
+> Vue.js app featuring a task manager with chatbot installed to assist with each task. !!Currently under heavy development!!
 
 ## Build Setup
 

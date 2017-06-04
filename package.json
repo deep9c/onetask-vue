@@ -1,7 +1,7 @@
 {
-  "name": "intelligent-task-manager",
+  "name": "one-task",
   "version": "1.0.0",
-  "description": "Task manager app with chatbot installed to assist with each task",
+  "description": "Vue.js app featuring a task manager with chatbot installed to assist with each task",
   "author": "Deep Chakraborty (deep9c@gmail.com)",
   "private": true,
   "scripts": {
