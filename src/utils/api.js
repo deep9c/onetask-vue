@@ -8,16 +8,17 @@ export default {
 
 	user: {
     	authenticated: false,
-    	username:''
+    	username:'',
+      userdetails: {}
 	},
 
 	login(creds) {
 		return axios.post(nodeurl + '/auth/login', creds)	//{ username: credentials.username, password: credentials.password }
           .then((response)=>{
-            console.log('loggedin response '+ JSON.stringify(response));            
+            console.log('login success ');            
             //login success
             this.user.authenticated = true;
-            this.user.username = response.data.user.username;
+            this.user.username = response.data.user._id;
             //return response;
             //context.$router.push(redirect);		//redirect to dashboard
             
@@ -30,6 +31,8 @@ export default {
   				if(response.data.user){	//already loggedin
   					this.user.authenticated = true;
   					this.user.username = response.data.user._id;
+            //console.log('getLoginStatus response -> '+ JSON.stringify(response));
+            this.user.userdetails = response.data;            
   				}
   				else{
   					this.user.authenticated = false;
@@ -43,7 +46,7 @@ export default {
   		return axios.get(nodeurl + '/auth/logout')
   			.then(function(response){
   				//if(response.data.message='loggedout'){
-            console.log(response);
+            console.log('logout success');
   					this.user.authenticated = false;
   					//return response;
             //context.$router.push(redirect);
@@ -54,7 +57,7 @@ export default {
   	checkLoggedin(to, from, next){
   		api.getLoginStatus()
   			.then((response)=>{
-  				console.log('checkLogin Response: '+  JSON.stringify(response));
+  				console.log('checkLogin Response: ');
   							
   				next(response.data.user ? true : {		////go to login if not loggedin
       				path: '/login',
@@ -69,7 +72,7 @@ export default {
   	checkLoggedout(to, from, next){
   		api.getLoginStatus()
   			.then(function(response){
-  				console.log('checkLoggedout Response: '+  JSON.stringify(response));
+  				console.log('checkLoggedout Response: ');
   							
   				next(response.data.user ? {		//go to dashboard if already loggedin
       				path: '/dashboard',
@@ -82,6 +85,10 @@ export default {
     
     register(context, userdetails, redirect){
       return axios.post(nodeurl + '/auth/register', userdetails);       
+    },
+
+    getWorkspace(workspaceId){
+      return axios.get(nodeurl + '/api/workspace/' + workspaceId);
     },
 
 }

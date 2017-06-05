@@ -61,12 +61,11 @@
 					e.preventDefault();	
 					api.register(this,this.user,'/dashboard')
 						.then((response)=>{
-							console.log('register response-> '+ JSON.stringify(response));
+							console.log('registration success ');
 							var credentials = { 												
 												username: this.user.username,
 												password: this.user.password												
-											};
-							console.log('register credentials:: ' + JSON.stringify(credentials));
+											};							
 
 							//api.login(this,credentials,'/dashboard');
 							api.login(credentials)
