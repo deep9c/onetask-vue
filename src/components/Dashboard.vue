@@ -12,6 +12,7 @@
 
 import TodoList from './TodoList'
 import CreateTodo from './CreateTodo'
+import api from '../utils/api'
 
 export default {
   name: 'Dashboard',
@@ -47,7 +48,7 @@ export default {
     };
   },
   beforeMount(){
-    //this.username = api.user.username;
+    this.username = api.user.username;
 
     
   },

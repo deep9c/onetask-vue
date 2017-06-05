@@ -1,5 +1,8 @@
 <template>
 <form id="register-form" role="form" style="display: none;">
+                  <div class="alert alert-danger" v-if="error">
+    				<p>{{ error }}</p>
+  				  </div>
                   <div class="form-group">
                     <input type="text"required name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="" v-model="user.username">
                   </div>
@@ -38,7 +41,8 @@
 					name: '',					
 					email: '',
 					password: '',					
-				}
+				},
+				error: ''
 			}
 		},
 
@@ -57,14 +61,24 @@
 					e.preventDefault();	
 					api.register(this,this.user,'/dashboard')
 						.then((response)=>{
-							var credentials = { 
-												credentials : {
-													username: this.user.username,
-													password: this.user.password
-												}
+							console.log('register response-> '+ JSON.stringify(response));
+							var credentials = { 												
+												username: this.user.username,
+												password: this.user.password												
 											};
+							console.log('register credentials:: ' + JSON.stringify(credentials));
 
-							api.login(this,credentials,'/dashboard');
+							//api.login(this,credentials,'/dashboard');
+							api.login(credentials)
+          						.then((resp)=>{
+            						this.$router.push('/dashboard');   //redirect to dashboard
+          						})
+          						.catch((error)=>{
+            						this.error = error.response.data;
+          						});  
+						})
+						.catch((error)=>{
+							this.error = error.response.data;
 						});
 				}
 				

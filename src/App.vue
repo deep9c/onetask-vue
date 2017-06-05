@@ -29,7 +29,10 @@
 
     methods: {
       logout() {
-        api.logout(this,'/login');
+        api.logout()
+          .then((response)=>{
+            this.$router.push('/login');
+          });
       }
     }
   }

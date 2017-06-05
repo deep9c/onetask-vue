@@ -11,21 +11,16 @@ export default {
     	username:''
 	},
 
-	login(context, creds, redirect) {
-		axios.post(nodeurl + '/auth/login', creds)	//{ username: credentials.username, password: credentials.password }
+	login(creds) {
+		return axios.post(nodeurl + '/auth/login', creds)	//{ username: credentials.username, password: credentials.password }
           .then((response)=>{
             console.log('loggedin response '+ JSON.stringify(response));            
             //login success
             this.user.authenticated = true;
             this.user.username = response.data.user.username;
-            context.$router.push(redirect);		//redirect to dashboard
+            //return response;
+            //context.$router.push(redirect);		//redirect to dashboard
             
-          })
-          .catch((error)=>{
-            console.log('loggedin error response '+ JSON.stringify(error));  
-            if(error.response.status === 401){  //login failed
-              context.error = 'Login Failed!';
-            }
           });
   	},
 
@@ -34,7 +29,7 @@ export default {
   			.then((response)=>{
   				if(response.data.user){	//already loggedin
   					this.user.authenticated = true;
-  					this.user.username = response.data.user.username;
+  					this.user.username = response.data.user._id;
   				}
   				else{
   					this.user.authenticated = false;
@@ -44,13 +39,14 @@ export default {
   			
   	},
 
-  	logout(context,redirect){
-  		axios.get(nodeurl + '/auth/logout')
+  	logout(){
+  		return axios.get(nodeurl + '/auth/logout')
   			.then(function(response){
   				//if(response.data.message='loggedout'){
             console.log(response);
   					this.user.authenticated = false;
-  					context.$router.push(redirect);
+  					//return response;
+            //context.$router.push(redirect);
   				//}  				
   			}.bind(this));
   	},
@@ -85,7 +81,7 @@ export default {
   	},
     
     register(context, userdetails, redirect){
-      return axios.post(nodeurl + 'auth/register', userdetails);       
+      return axios.post(nodeurl + '/auth/register', userdetails);       
     },
 
 }
