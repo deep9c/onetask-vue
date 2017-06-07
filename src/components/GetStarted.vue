@@ -5,7 +5,7 @@
           <div class="panel-heading">
             <div class="row">
               <div class="col-xs-6">
-                <a href="#" class="active" id="login-form-link" v-on:click="showLoginForm($event,this)">Login</a>
+                <a href="#" class="active" id="login-form-link" v-on:click="showLoginForm($event)">Login</a>
               </div>
               <div class="col-xs-6">
                 <a href="#" id="register-form-link" v-on:click="showRegisterForm($event)">Register</a>

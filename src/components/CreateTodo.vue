@@ -11,8 +11,8 @@
             <input v-model="titleText" type='text' ref='title' defaultValue="">
           </div>
           <div class='field'>
-            <label>Project</label>
-            <input v-model="projectText" type='text' ref='project' defaultValue="">
+            <label>Description</label>
+            <input v-model="description" type='text' ref='project' defaultValue="">
           </div>
           <div class='ui two button attached buttons'>
             <button class='ui basic blue button' v-on:click="sendForm">
@@ -33,33 +33,32 @@ export default {
   data() {
     return {
       titleText: '',
-      projectText: '',
+      description: '',
       isCreating: false,
     };
   },
   methods: {
     openForm() {
-      console.log("open form");
+      //console.log("open form");
       this.isCreating = true;
     },
     closeForm() {
       this.isCreating = false;
     },
     sendForm() {
-      console.log("send form " + this.titleText.length);
-      if (this.titleText.length > 0 && this.projectText.length > 0) {
-        console.log("inside if");
+      //console.log("send form " + this.titleText.length);
+      if (this.titleText.length > 0 && this.description.length > 0) {
         const title = this.titleText;
-        const project = this.projectText;
+        const description = this.description;
         this.$emit('add-todo', {
           title,
-          project,
-          done: false,
+          description,
+          status: 'pending',
         });
-        console.log("add-todo event emitted");
+        //console.log("add-todo event emitted");
         this.newTodoText = '';
         this.titleText='';
-        this.projectText='';
+        this.description='';
       }
       this.isCreating = false;
     },

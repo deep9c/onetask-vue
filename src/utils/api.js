@@ -83,12 +83,21 @@ export default {
   			}.bind(this));
   	},
     
-    register(context, userdetails, redirect){
+    register(userdetails){
       return axios.post(nodeurl + '/auth/register', userdetails);       
     },
 
     getWorkspace(workspaceId){
       return axios.get(nodeurl + '/api/workspace/' + workspaceId);
+    },
+
+    getTasks(workspaceId, projId, userId){
+      //console.log('getTasks URL --->> '+ nodeurl + '/api/task/' + userId + '/' + workspaceId + '/' + projId);
+      return axios.get(nodeurl + '/api/task/' + userId + '/' + workspaceId + '/' + projId);
+    },
+
+    createTask(createTaskInputs){
+      return axios.post(nodeurl + '/api/task', createTaskInputs);
     },
 
 }

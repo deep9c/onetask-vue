@@ -6,7 +6,7 @@
           {{ todo.title }}
         </div>
         <div class='meta'>
-          {{ todo.project }}
+          {{ todo.description }}
         </div>
         <div class='extra content'>
           <span class='right floated edit icon' v-on:click="showForm">
@@ -27,8 +27,8 @@
           <input type='text' v-model="todo.title" >
         </div>
         <div class='field'>
-          <label>Project</label>
-          <input type='text' v-model="todo.project" >
+          <label>description</label>
+          <input type='text' v-model="todo.description" >
         </div>
         <div class='ui two button attached buttons'>
           <button class='ui basic blue button' v-on:click="hideForm">
@@ -38,10 +38,10 @@
       </div>
     </div>
 
-      <div class='ui bottom attached green basic button' v-show="todo.done">	<!--show if v-show is true-->
+      <div class='ui bottom attached green basic button' v-if="todo.status==='completed'">	<!--show if v-show is true-->
         Completed
       </div>
-      <div class='ui bottom attached red basic button' v-show="!todo.done" v-on:click="completeTodo(todo)">
+      <div class='ui bottom attached red basic button' v-if="todo.status=='pending'" v-on:click="completeTodo(todo)">
         Complete
       </div>
   	</div>  

@@ -59,7 +59,7 @@
 			submit(e){				
 				if($('#register-form')[0].checkValidity()){					
 					e.preventDefault();	
-					api.register(this,this.user,'/dashboard')
+					api.register(this.user)
 						.then((response)=>{
 							console.log('registration success ');
 							var credentials = { 												

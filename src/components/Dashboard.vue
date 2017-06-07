@@ -1,20 +1,46 @@
 <template>
-  <div id="app">
+  <div id="wrapper">
     <!--<img src="./assets/logo.png">-->
-    <!--<router-view></router-view>-->
-    <p>Welcome {{user.username}}</p>
-    <nav class="navbar navbar-default">
-      <div class="container">
-        <ul class="nav navbar-nav">
-          <li><router-link to="/dashboard">Dashboard</router-link></li>
-          <li><router-link to="/login" v-if="!user.authenticated">Login</router-link></li>
-          <li><router-link to="/login" v-if="user.authenticated" v-on:click.native="logout">Logout</router-link></li>
-          <li v-if="enrolledWorkspaces[selectedWorkspaceIndex]">{{enrolledWorkspaces[selectedWorkspaceIndex].name}}</li>
-        </ul>
-      </div>    
-    </nav>
-    <todo-list v-bind:todos="todosarray"></todo-list>
-    <create-todo v-on:add-todo="addTodo"></create-todo>
+    <!--<router-view></router-view>-->    
+    
+    <!-- Top Navbar -->
+    <Navbar v-bind:username="user.username" v-bind:selectedWsName="selectedWsName"></Navbar>
+    
+    <!-- Projects in Sidebar -->
+    <Sidebar v-bind:selectedWs="selectedWs" v-on:select-proj="selectProj"></Sidebar>
+
+    <!-- Page content -->
+    <div id="page-content-wrapper">
+        <div class="page-content">
+            <div class="container-fluid">
+                <div class="row">
+
+                    <!-- Panel 1 -->
+                    <div class="col-md-6">
+                        <Tasks v-bind:tasks="tasks" v-bind:selectedWsId="selectedWs._id" 
+                          v-bind:selectedProj="selectedProj" v-bind:username="user.username">
+                        </Tasks>
+                    </div>
+
+                    <!-- Panel 2 -->
+                    <div class="col-md-6">                    
+                        <div class="panel panel-success">
+                            <div class="panel-heading">
+                                    <!-- Panel 2 -->
+                                    Comments
+                            </div>
+                            <div class="panel-body">
+                                <!-- content body -->
+                                Comments body
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
   </div>
 </template>
 
@@ -22,83 +48,211 @@
 
 import TodoList from './TodoList'
 import CreateTodo from './CreateTodo'
+import Navbar from './Navbar'
+import Sidebar from './Sidebar'
+import Tasks from './Tasks'
 import api from '../utils/api'
 
 export default {
   name: 'Dashboard',
   components: {
     TodoList,
-    CreateTodo
+    CreateTodo,
+    Navbar,
+    Sidebar,
+    Tasks
   },
   data () {
     return {
-      todosarray:  [
-                {
-                  title: 'Todo A',
-                  project: 'Project 1',
-                  done: false
-                },
-                {
-                  title: 'Todo B',
-                  project: 'Project 2',
-                  done: false
-                },
-                {
-                  title: 'Todo C',
-                  project: 'Project 2',
-                  done: true
-                },
-                {
-                  title: 'Todo D',
-                  project: 'Project 3',
-                  done: false
-                }
-              ],
+      
         //username: '',
         user: api.user,
         enrolledWorkspaces: [],
-        selectedWorkspaceIndex: 0
+        selectedWorkspaceIndex: -1,
+        selectedWsName: '',
+        selectedWs: {},
+        selectedProj: {},
+        tasks: {},
     };
   },
-  beforeMount(){
+  created(){
+    //console.log('beforeCreate of Dashboard starts');
     this.user = api.user;
     //console.log('dashhhh:: ' + JSON.stringify(api.user.user));
-    this.user.userdetails.user.WorkspaceIds.map((workspace,index)=>{
-      api.getWorkspace(workspace.workspaceId)
+
+    
+    
+    var promise1 = this.user.userdetails.user.WorkspaceIds.map((workspace,index)=>{
+      return api.getWorkspace(workspace.workspaceId)
         .then((resp)=>{
-          console.log('getWorkspace response:-> ' + JSON.stringify(resp.data));
+          //console.log('getWorkspace response:-> ' + JSON.stringify(resp.data));
           this.enrolledWorkspaces.push(resp.data);
-          console.log('enrolledWorkspace ' +index+ ':: ' + JSON.stringify(this.enrolledWorkspaces));
+          //console.log('enrolledWorkspace ' +index+ ':: ' + JSON.stringify(this.enrolledWorkspaces));
         });
-    });
-    this.selectedWorkspaceIndex = this.user.userdetails.user.WorkspaceIds.findIndex((ws)=>{
-      return ws.selected;
     });
     
+    this.selectedWorkspaceIndex = this.user.userdetails.user.WorkspaceIds.findIndex((ws)=>{
+      return ws.selected;   //return first index where workspace.selected=true
+    });
+
+    Promise.all(promise1).then((results)=> {
+      this.selectedWsName = this.enrolledWorkspaces[this.selectedWorkspaceIndex].name;
+      this.selectedWs = this.enrolledWorkspaces[this.selectedWorkspaceIndex];
+      var selectedProjIndex = this.enrolledWorkspaces[this.selectedWorkspaceIndex].projects.findIndex((proj)=>{
+        return proj.selected;
+      });
+      this.selectedProj = this.enrolledWorkspaces[this.selectedWorkspaceIndex].projects[selectedProjIndex];
+      
+      //console.log('getTasks req::-- ' + this.selectedWs._id+ '...' + this.selectedProj._id + '...' + this.user.username);
+      api.getTasks(this.selectedWs._id,this.selectedProj._id, this.user.username)
+        .then((resp)=>{
+          //console.log('getTasks resp::- ' + JSON.stringify(resp.data));
+          this.tasks = resp.data;
+      });
+
+    });
+
+    
+
+    //console.log('beforeCreate of Dashboard ends');
   },
   methods: {
-    addTodo(newtodo) {
-      console.log("addTodo() called");
-      this.todosarray.push(newtodo);
+    toggleMenu(e){
+      e.preventDefault();
+      $("#wrapper").toggleClass("active");
     },
-    logout() {
-      api.logout()
-        .then((response)=>{
-          this.$router.push('/login');
-        });
+    selectProj(index){
+      //console.log('selectProj called with index = ' + index);
+      this.selectedProj = this.enrolledWorkspaces[this.selectedWorkspaceIndex].projects[index];
+      api.getTasks(this.selectedWs._id,this.selectedProj._id, this.user.username)
+        .then((resp)=>{
+          //console.log('getTasks resp::- ' + JSON.stringify(resp.data));
+          this.tasks = resp.data;
+      });
     },
+    
   },
 
 }
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+#wrapper {
+  padding-left: 250px;
+  transition: all 0.4s ease 0s;
 }
+
+#sidebar-wrapper {
+  margin-left: -250px;
+  top: 51px;
+  left: 250px;
+  width: 250px;
+  background: #000;
+  position: fixed;
+  height: 100%;
+  overflow-y: auto;
+  z-index: 1000;
+  transition: all 0.4s ease 0s;
+}
+
+#wrapper.active {
+  padding-left: 0;
+}
+
+#wrapper.active #sidebar-wrapper {
+  left: 0;
+}
+
+#page-content-wrapper {
+  width: 100%;
+  padding-top: 70px;
+  transition: all 0.4s ease 0s;
+}
+
+.sidebar-nav {
+  position: absolute;
+  top: 0;
+  width: 250px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-nav li {
+  line-height: 40px;
+  text-indent: 20px;
+}
+
+.sidebar-nav li a {
+  color: #999999;
+  display: block;
+  text-decoration: none;
+  padding-left: 60px;
+}
+
+.sidebar-nav li a span:before {
+  position: absolute;
+  left: 0;
+  color: #41484c;
+  text-align: center;
+  width: 20px;
+  line-height: 18px;
+}
+
+.sidebar-nav li a:hover,
+.sidebar-nav li.active {
+  color: #fff;
+  background: rgba(255,255,255,0.2);
+  text-decoration: none;
+}
+
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+  text-decoration: none;
+}
+
+.sidebar-nav > .sidebar-brand {
+  height: 65px;
+  line-height: 60px;
+  font-size: 18px;
+}
+
+.sidebar-nav > .sidebar-brand a {
+  color: #999999;
+}
+
+.sidebar-nav > .sidebar-brand a:hover {
+  color: #fff;
+  background: none;
+}
+
+
+
+@media (max-width:767px) {
+
+#wrapper {
+  padding-left: 0;
+}
+
+#sidebar-wrapper {
+  left: 0;
+}
+
+#wrapper.active {
+  position: relative;
+  left: 250px;
+}
+
+#wrapper.active #sidebar-wrapper {
+  left: 250px;
+  width: 250px;
+  transition: all 0.4s ease 0s;
+}
+
+#menu-toggle {
+  display: inline-block;
+}
+
+}
+
 </style>
