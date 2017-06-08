@@ -17,23 +17,14 @@
 
                     <!-- Panel 1 -->
                     <div class="col-md-6">
-                        <Tasks v-bind:tasks="tasks" v-bind:selectedWsId="selectedWs._id" 
-                          v-bind:selectedProj="selectedProj" v-bind:username="user.username">
+                        <Tasks v-bind:tasks="tasks" v-bind:selectedWsId="selectedWs._id"  v-bind:selectedProj="selectedProj" 
+                        v-bind:username="user.username" v-on:select-task="selectTask">
                         </Tasks>
                     </div>
 
                     <!-- Panel 2 -->
                     <div class="col-md-6">                    
-                        <div class="panel panel-success">
-                            <div class="panel-heading">
-                                    <!-- Panel 2 -->
-                                    Comments
-                            </div>
-                            <div class="panel-body">
-                                <!-- content body -->
-                                Comments body
-                            </div>
-                        </div>
+                        <Comments v-if="selectedTask._id && taskComments.comments" v-bind:selectedTask="selectedTask" v-bind:taskComments="taskComments.comments" v-bind:username="user.username"></Comments>
                     </div>
                 </div>
             </div>
@@ -51,6 +42,7 @@ import CreateTodo from './CreateTodo'
 import Navbar from './Navbar'
 import Sidebar from './Sidebar'
 import Tasks from './Tasks'
+import Comments from './Comments'
 import api from '../utils/api'
 
 export default {
@@ -60,7 +52,8 @@ export default {
     CreateTodo,
     Navbar,
     Sidebar,
-    Tasks
+    Tasks,
+    Comments
   },
   data () {
     return {
@@ -73,6 +66,8 @@ export default {
         selectedWs: {},
         selectedProj: {},
         tasks: {},
+        selectedTask: {},
+        taskComments: {},
     };
   },
   created(){
@@ -128,9 +123,18 @@ export default {
         .then((resp)=>{
           //console.log('getTasks resp::- ' + JSON.stringify(resp.data));
           this.tasks = resp.data;
+          this.taskComments = {};
       });
     },
-    
+    selectTask(task){        
+      console.log('showcom called' + JSON.stringify(task));
+      this.selectedTask = task;
+      api.getComments(task._id)
+        .then((resp)=>{
+          console.log('getComments resp:- '+JSON.stringify(resp));
+          this.taskComments = resp.data;
+        });
+    }
   },
 
 }

@@ -100,4 +100,16 @@ export default {
       return axios.post(nodeurl + '/api/task', createTaskInputs);
     },
 
+    getComments(taskId){
+      return axios.get(nodeurl + '/api/comment/' + taskId);
+    },
+
+    createComment(createCommentInputs){
+      return axios.post(nodeurl + '/api/comment', createCommentInputs);
+    },
+
+    createProject(createProjInputs){
+      return axios.post(nodeurl + '/api/project', createProjInputs);
+    },
+
 }

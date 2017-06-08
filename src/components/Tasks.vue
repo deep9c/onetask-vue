@@ -2,11 +2,11 @@
 	<div class="panel panel-danger">
                             <div class="panel-heading">
                                     <!-- Panel 1 -->
-                                    {{selectedProj.name}} - Tasks
+                                    <strong>Tasks: </strong> {{selectedProj.name}}
                             </div>
                             <div class="panel-body">
                                 <!-- content body -->
-                                <todo-list v-bind:todos="tasks.tasks"></todo-list>
+                                <todo-list v-bind:todos="tasks.tasks" v-on:select-task="selectTask"></todo-list>
                                 <create-todo v-on:add-todo="addTodo"></create-todo>
                             </div>
                         </div>
@@ -72,6 +72,11 @@
 		},
 
 		methods: {
+			selectTask(task){      
+    			console.log('showcom called tasks: ' + JSON.stringify(task));  
+        		this.$emit('select-task', task);
+      		},
+
 			addTodo(newtodo) {
       			//console.log("addTodo() called");
       			var createTaskInputs = {
@@ -83,10 +88,15 @@
       			};
       			api.createTask(createTaskInputs)
       				.then((resp)=>{
-      					this.tasks.tasks.push(newtodo);
+      					console.log('createTask resp:- ' + JSON.stringify(resp));
+      					this.tasks.tasks.push(resp.data);
+      					this.selectTask(resp.data);
+      					console.log('createTask ends');
       			});
       			//this.tasks.push(newtodo);
     		},
+
+    		
 		},
 
 		created(){

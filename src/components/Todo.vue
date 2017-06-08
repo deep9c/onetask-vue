@@ -1,6 +1,8 @@
 <template>  
     <!--// JavaScript expressions in Vue are enclosed in double curly brackets.-->
+    
      <div class='ui centered card'>
+     <a href="#" class="list-group-item" v-on:click="selectTask(todo)">
       <div class='content' v-show="!isEditing">
         <div class='header'>
           {{ todo.title }}
@@ -18,6 +20,7 @@
           </span>
         </div>
       </div>
+    </a>
 
     <!-- form is visible when we are in editing mode -->
     <div class="content" v-show="isEditing">
@@ -69,6 +72,10 @@ export default {
     completeTodo(todo) {
         this.$emit('complete-todo', todo);
     },
+    selectTask(todo){
+      //console.log('showcom called todo');  
+      this.$emit('select-task', todo);
+    }
   },
 };
 </script>
