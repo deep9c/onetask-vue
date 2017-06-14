@@ -7,7 +7,7 @@
       <div class='content'>
         <div class='ui form'>
           <div class='field'>
-            <label>Name</label>
+            <label>Workspace Name</label>
             <input v-model="nameText" type='text' ref='title' defaultValue="">
           </div>
           <div class='field'>
@@ -30,7 +30,7 @@
 
 <script>
 export default {
-  name: 'CreateProject',
+  name: 'CreateWorkspace',
 
   data() {
     return {
@@ -52,7 +52,7 @@ export default {
       if (this.nameText.length > 0 && this.description.length > 0) {
         const name = this.nameText;
         const description = this.description;
-        this.$emit('add-project', {
+        this.$emit('add-workspace', {
           name,
           description,
         });

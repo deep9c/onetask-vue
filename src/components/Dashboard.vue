@@ -4,7 +4,8 @@
     <!--<router-view></router-view>-->    
     
     <!-- Top Navbar -->
-    <Navbar v-bind:username="user.username" v-bind:selectedWsName="selectedWsName"></Navbar>
+    <Navbar v-bind:username="user.username" v-bind:selectedWs="selectedWs" v-bind:enrolledWorkspaces="enrolledWorkspaces" 
+      v-on:select-ws="selectWorkspace"></Navbar>
     
     <!-- Projects in Sidebar -->
     <Sidebar v-bind:selectedWs="selectedWs" v-on:select-proj="selectProj"></Sidebar>
@@ -18,7 +19,7 @@
                     <!-- Panel 1 -->
                     <div class="col-md-6">
                         <Tasks v-bind:tasks="tasks" v-bind:selectedWsId="selectedWs._id"  v-bind:selectedProj="selectedProj" 
-                        v-bind:username="user.username" v-on:select-task="selectTask">
+                          v-bind:username="user.username" v-on:select-task="selectTask">
                         </Tasks>
                     </div>
 
@@ -62,7 +63,6 @@ export default {
         user: api.user,
         enrolledWorkspaces: [],
         selectedWorkspaceIndex: -1,
-        selectedWsName: '',
         selectedWs: {},
         selectedProj: {},
         tasks: {},
@@ -91,7 +91,6 @@ export default {
     });
 
     Promise.all(promise1).then((results)=> {
-      this.selectedWsName = this.enrolledWorkspaces[this.selectedWorkspaceIndex].name;
       this.selectedWs = this.enrolledWorkspaces[this.selectedWorkspaceIndex];
       var selectedProjIndex = this.enrolledWorkspaces[this.selectedWorkspaceIndex].projects.findIndex((proj)=>{
         return proj.selected;
@@ -118,13 +117,19 @@ export default {
     },
     selectProj(index){
       //console.log('selectProj called with index = ' + index);
-      this.selectedProj = this.enrolledWorkspaces[this.selectedWorkspaceIndex].projects[index];
-      api.getTasks(this.selectedWs._id,this.selectedProj._id, this.user.username)
-        .then((resp)=>{
-          //console.log('getTasks resp::- ' + JSON.stringify(resp.data));
-          this.tasks = resp.data;
-          this.taskComments = {};
-      });
+      this.selectedProj = this.selectedWs.projects[index];
+      if(this.selectedProj){
+        api.getTasks(this.selectedWs._id,this.selectedProj._id, this.user.username)
+          .then((resp)=>{
+            //console.log('getTasks resp::- ' + JSON.stringify(resp.data));
+            this.tasks = resp.data;
+            this.taskComments = {};
+        });
+      }
+      else{
+        this.tasks = {};
+        this.taskComments = {};
+      }
     },
     selectTask(task){        
       console.log('showcom called' + JSON.stringify(task));
@@ -134,6 +139,12 @@ export default {
           console.log('getComments resp:- '+JSON.stringify(resp));
           this.taskComments = resp.data;
         });
+    },
+
+    selectWorkspace(ws){        
+      console.log('selectWorkspace called in dashboard' + JSON.stringify(ws));
+      this.selectedWs = ws;   
+      this.selectProj(0);  
     }
   },
 
@@ -142,22 +153,11 @@ export default {
 
 <style>
 #wrapper {
-  padding-left: 250px;
+  padding-left: 170px;
   transition: all 0.4s ease 0s;
 }
 
-#sidebar-wrapper {
-  margin-left: -250px;
-  top: 51px;
-  left: 250px;
-  width: 250px;
-  background: #000;
-  position: fixed;
-  height: 100%;
-  overflow-y: auto;
-  z-index: 1000;
-  transition: all 0.4s ease 0s;
-}
+
 
 #wrapper.active {
   padding-left: 0;
@@ -169,66 +169,11 @@ export default {
 
 #page-content-wrapper {
   width: 100%;
-  padding-top: 70px;
+  padding-top: 10px;
   transition: all 0.4s ease 0s;
 }
 
-.sidebar-nav {
-  position: absolute;
-  top: 0;
-  width: 250px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
 
-.sidebar-nav li {
-  line-height: 40px;
-  text-indent: 20px;
-}
-
-.sidebar-nav li a {
-  color: #999999;
-  display: block;
-  text-decoration: none;
-  padding-left: 60px;
-}
-
-.sidebar-nav li a span:before {
-  position: absolute;
-  left: 0;
-  color: #41484c;
-  text-align: center;
-  width: 20px;
-  line-height: 18px;
-}
-
-.sidebar-nav li a:hover,
-.sidebar-nav li.active {
-  color: #fff;
-  background: rgba(255,255,255,0.2);
-  text-decoration: none;
-}
-
-.sidebar-nav li a:active,
-.sidebar-nav li a:focus {
-  text-decoration: none;
-}
-
-.sidebar-nav > .sidebar-brand {
-  height: 65px;
-  line-height: 60px;
-  font-size: 18px;
-}
-
-.sidebar-nav > .sidebar-brand a {
-  color: #999999;
-}
-
-.sidebar-nav > .sidebar-brand a:hover {
-  color: #fff;
-  background: none;
-}
 
 
 

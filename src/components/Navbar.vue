@@ -23,9 +23,13 @@
         <ul class="nav navbar-nav pull-right">
             
             <li class="dropdown">              
-              <a href="#" id="nbAcctDD" class="dropdown-toggle" data-toggle="dropdown"><li v-if="selectedWsName">{{selectedWsName}}</li></a>
+              <a href="#" id="nbAcctDD" class="dropdown-toggle" data-toggle="dropdown"><li v-if="selectedWs">{{selectedWs.name}}</li></a>
               <ul class="dropdown-menu pull-right">
-                <li>Other workspaces</li>
+                <li v-for="(ws,index) in enrolledWorkspaces" :key="index">
+                  <a href="#" v-on:click="selectWorkspace(ws)" v-if="ws._id!=selectedWs._id"> {{ws.name}} </a>
+                </li>
+                <li role="separator" class="divider"></li>
+                <li><CreateWorkspace v-on:add-workspace='createWorkspace'></CreateWorkspace></li>
               </ul>
             </li> 
             <li class="dropdown">
@@ -42,20 +46,26 @@
 
 <script>
 	import api from '../utils/api'
+  import CreateWorkspace from './CreateWorkspace';
 	
 	export default{
 		name: 'Navbar',
-		//props: ['user','enrolledWorkspaces','selectedWorkspaceIndex'],
+
+		components: {CreateWorkspace},
 
 		props: {
 			username: {
 				type: String,
 				required: true,
 			},			
-			selectedWsName: {
-				type: String,
+			selectedWs: {
+				type: Object,
 				required: true,
-			}
+			},
+      enrolledWorkspaces:{
+        type: Array,
+        required: true,
+      }
 		},
 
 		data(){
@@ -67,17 +77,37 @@
 			//console.log('zzzzzzzzzz:: ' + this.selectedWorkspaceIndex);
 		},
 		methods: {
-    		toggleMenu(e){
-      			e.preventDefault();
-      			$("#wrapper").toggleClass("active");
-    		},     
-    		logout() {
-      			api.logout()
-        			.then((response)=>{
-          				this.$router.push('/login');
-        			});
-    		},   
-  		},
+    	toggleMenu(e){
+      	e.preventDefault();
+      	$("#wrapper").toggleClass("active");
+    	},     
+
+    	logout() {
+      	api.logout()
+       		.then((response)=>{
+      			this.$router.push('/login');
+      		});
+    	},   
+
+      createWorkspace(newworkspace){
+        console.log('createWorkspace function called');
+        var createWorkspaceInputs = {
+          username: this.username,
+          workspacename: newworkspace.name,
+          //description: newworkspace.description
+        };
+        api.createWorkspace(createWorkspaceInputs)
+          .then((resp)=>{
+            console.log('createWorkspace resp-> ' + JSON.stringify(resp.data));
+            //this.selectedWs.projects.push(resp.data);
+            //this.selectProj(this.selectedWs.projects.findIndex((p)=>{return p._id == resp.data._id}));
+          });
+      },
+
+      selectWorkspace(ws){        
+        this.$emit('select-ws', ws);
+      },
+  	},
 	}
 </script>
 

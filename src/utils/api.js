@@ -112,4 +112,8 @@ export default {
       return axios.post(nodeurl + '/api/project', createProjInputs);
     },
 
+    createWorkspace(createWorkspaceInputs){
+      return axios.post(nodeurl + '/api/workspace', createWorkspaceInputs);
+    },
+
 }

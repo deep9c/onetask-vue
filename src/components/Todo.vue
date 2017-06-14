@@ -1,25 +1,32 @@
 <template>  
     <!--// JavaScript expressions in Vue are enclosed in double curly brackets.-->
     
-     <div class='ui centered card'>
-     <a href="#" class="list-group-item" v-on:click="selectTask(todo)">
-      <div class='content' v-show="!isEditing">
-        <div class='header'>
+  <div>
+    
+
+    <a id="todoanchor" href="#" class="list-group-item" v-on:click="selectTask(todo,$event)" v-show="!isEditing">
+      <div class='glyphicon glyphicon-ok-circle' v-if="todo.status==='completed'"> <!--show if v-show is true-->
+        <!-- Completed -->
+      </div>
+      <div class='glyphicon glyphicon-time' v-if="todo.status=='pending'" v-on:click="completeTodo(todo)">
+        <!-- Complete -->
+      </div>
+        
           {{ todo.title }}
-        </div>
-        <div class='meta'>
+        
+        <!--<div class='meta'>
           {{ todo.description }}
-        </div>
-        <div class='extra content'>
-          <span class='right floated edit icon' v-on:click="showForm">
-            <i class='edit icon'></i>
-          </span>
-          <!-- add the trash icon in below the edit icon in the template -->
-          <span class='right floated trash icon' v-on:click="deleteTodo(todo)">
+        </div>-->
+                
+          <span class='badge' v-on:click="deleteTodo(todo)">
             <i class='trash icon'></i>
           </span>
-        </div>
-      </div>
+
+          <span class='badge' v-on:click="showForm">
+            <i class='edit icon'></i>
+          </span>
+        
+      
     </a>
 
     <!-- form is visible when we are in editing mode -->
@@ -41,13 +48,8 @@
       </div>
     </div>
 
-      <div class='ui bottom attached green basic button' v-if="todo.status==='completed'">	<!--show if v-show is true-->
-        Completed
-      </div>
-      <div class='ui bottom attached red basic button' v-if="todo.status=='pending'" v-on:click="completeTodo(todo)">
-        Complete
-      </div>
-  	</div>  
+      
+  </div>  
 </template>
 
 <script type = "text/javascript" >
@@ -72,9 +74,12 @@ export default {
     completeTodo(todo) {
         this.$emit('complete-todo', todo);
     },
-    selectTask(todo){
+    selectTask(todo,e){
       //console.log('showcom called todo');  
+      $("a").removeClass("active");
+      $(e.currentTarget).addClass('active');
       this.$emit('select-task', todo);
+      
     }
   },
 };

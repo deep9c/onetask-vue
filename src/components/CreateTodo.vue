@@ -56,7 +56,6 @@ export default {
           status: 'pending',
         });
         //console.log("add-todo event emitted");
-        this.newTodoText = '';
         this.titleText='';
         this.description='';
       }

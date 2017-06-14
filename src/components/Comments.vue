@@ -17,7 +17,7 @@
                 </div>
                 <div class="commentText"><strong>{{comment.CommenterUserId}}</strong>
                   <span class="date sub-text">on {{new Date(comment.createdDateTime).toDateString()}}</span>
-                    <p class="">{{comment.content}}.</p> 
+                    <p class="">{{comment.content}}</p> 
 
                 </div>
             </li>

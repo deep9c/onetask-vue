@@ -5,6 +5,10 @@ import App from './App'
 import router from './router'
 
 Vue.config.productionTip = false
+var cors = require('cors');
+//Vue.use(cors({ origin: "http://localhost:8080", credentials: false}));   //used for cross-domain requests
+//Vue.http.options.xhr = {withCredentials: false};
+//Vue.http.headers.common['Access-Control-Allow-Origin'] = 'http://http://192.168.0.3:8080'
 
 /* eslint-disable no-new */
 new Vue({

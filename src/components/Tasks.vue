@@ -1,19 +1,33 @@
 <template>
-	<div class="panel panel-danger">
+	<div class="panel panel-warning">
                             <div class="panel-heading">
                                     <!-- Panel 1 -->
-                                    <strong>Tasks: </strong> {{selectedProj.name}}
+                                    <strong>Tasks: </strong> <!-- {{selectedProj.name}} -->
                             </div>
                             <div class="panel-body">
-                                <!-- content body -->
+                                <!-- content body 
                                 <todo-list v-bind:todos="tasks.tasks" v-on:select-task="selectTask"></todo-list>
+                                -->
+                                <!--
+    							<p v-if="tasks.tasks">Completed Tasks: {{tasks.tasks.filter(todo => {return todo.status === 'completed'}).length}}</p>
+    							<p v-if="tasks.tasks">Pending Tasks: {{tasks.tasks.filter(todo => {return todo.status === 'pending'}).length}}</p>
+    							-->
+
+    							<div class="list-group">
+    							<todo v-on:delete-todo="deleteTodo" v-on:complete-todo="completeTodo" v-for="(todo,index) in tasks.tasks" 
+      								v-bind:todo="todo" :key="index" :todo.sync="todo" v-on:select-task="selectTask">      
+  								</todo>
+  								<!-- todo.sync used for completeTodo function to work -->
+    							</div>
+
+
                                 <create-todo v-on:add-todo="addTodo"></create-todo>
                             </div>
                         </div>
 </template>
 
 <script>
-	import TodoList from './TodoList'
+	import Todo from './Todo'
 	import CreateTodo from './CreateTodo'
 	import api from '../utils/api'
 
@@ -21,7 +35,7 @@
 		name: 'Tasks',
 
 		components: {
-			TodoList,
+			Todo,
 			CreateTodo
 		},
 
@@ -32,7 +46,7 @@
 			},
 			selectedProj: {
 				type: Object,
-				required: true
+				required: false
 			},
 			username: {
 				type: String,
@@ -96,7 +110,15 @@
       			//this.tasks.push(newtodo);
     		},
 
-    		
+    		deleteTodo(todo) {
+      			const todoIndex = this.tasks.tasks.indexOf(todo);
+      			this.tasks.tasks.splice(todoIndex, 1);
+    		},
+
+    		completeTodo(todo){
+    			console.log("completeTodo() called");
+    			this.tasks.tasks[this.tasks.tasks.indexOf(todo)].status = 'completed'; 
+    		},
 		},
 
 		created(){
@@ -112,3 +134,9 @@
 	}
 
 </script>
+
+<style scoped>
+p.tasks {
+  text-align: center;
+}
+</style>
