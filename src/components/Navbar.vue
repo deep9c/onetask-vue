@@ -12,7 +12,7 @@
                     <a id="menu-toggle" href="#" class="glyphicon glyphicon-align-justify btn-menu toggle" v-on:click="toggleMenu($event)">
                         <i class="fa fa-bars"></i>
                     </a>
-            <a href="#">OneTask</a>
+                    <a href="#">OneTask</a>
                 </div>
       </div>
       <div id="navbar" class="collapse navbar-collapse">

@@ -100,6 +100,15 @@ export default {
       return axios.post(nodeurl + '/api/task', createTaskInputs);
     },
 
+    updateTask(updateTaskInputs){
+      return axios.put(nodeurl + '/api/task', updateTaskInputs);
+    },
+
+    /*deleteTask(deleteTaskInputs){
+      console.log('deleteTaskInputs:- ' + JSON.stringify(deleteTaskInputs));
+      return axios.delete(nodeurl + '/api/task', deleteTaskInputs);
+    },*/
+
     getComments(taskId){
       return axios.get(nodeurl + '/api/comment/' + taskId);
     },

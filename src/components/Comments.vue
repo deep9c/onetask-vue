@@ -25,7 +25,8 @@
         </ul>
         <form class="form-inline" role="form">
             <div class="form-group">
-                <input class="form-control" type="text" id="box" style="width: 300px; height: 20px" placeholder="Your comments" v-model="newcomment" v-on:focus='textboxFocus($event)' v-on:blur='textboxBlur($event)'/>
+                <input class="form-control" type="text" id="box" style="width: 300px; height: 20px" placeholder="Your comments" 
+                    v-model="newcomment" v-on:focus='textboxFocus($event)' v-on:blur='textboxBlur($event)'/>
             </div>
             <div class="form-group">
                 <!-- <button class="btn btn-default" v-on:click='submit($event)'>Add</button> -->
@@ -85,7 +86,7 @@
 
 			textboxFocus(e){
 				$(e.currentTarget).animate({
-    				width: '150px',
+    				width: '300px',
     				height: '100px'
   				}, 500, function() {
     			// Animation complete.
@@ -94,7 +95,7 @@
 
 			textboxBlur(e){
 				$(e.currentTarget).animate({
-     				width: '100px',
+     				width: '300px',
      				height: '20px'
    				}, 500, function() {
      			// Animation complete.

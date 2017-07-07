@@ -14,7 +14,8 @@
     							-->
 
     							<div class="list-group">
-    							<todo v-on:delete-todo="deleteTodo" v-on:complete-todo="completeTodo" v-for="(todo,index) in tasks.tasks" 
+    							<todo v-on:delete-todo="deleteTodo" v-on:complete-todo="completeTodo" v-on:edit-todo="editTodo" 
+    								v-for="(todo,index) in tasks.tasks" 
       								v-bind:todo="todo" :key="index" :todo.sync="todo" v-on:select-task="selectTask">      
   								</todo>
   								<!-- todo.sync used for completeTodo function to work -->
@@ -113,11 +114,44 @@
     		deleteTodo(todo) {
       			const todoIndex = this.tasks.tasks.indexOf(todo);
       			this.tasks.tasks.splice(todoIndex, 1);
+      			var updateTaskInputs = {
+      				operation: 'delete',
+      				workspaceid: this.selectedWsId,
+      				projectid: this.selectedProj._id,
+    				taskid: todo._id,
+    			};
+      			api.updateTask(updateTaskInputs)
+    				.then((resp)=>{
+    					console.log('updateTask resp');
+    				});
+    		},
+
+    		editTodo(todo) {
+      			console.log("editTodo() called");    			
+    			var updateTaskInputs = {
+    				operation: 'update',
+    				taskid: todo._id,
+    				title: todo.title,
+    				description: todo.description
+    			};
+    			api.updateTask(updateTaskInputs)
+    				.then((resp)=>{
+    					console.log('updateTask resp');
+    				});
     		},
 
     		completeTodo(todo){
     			console.log("completeTodo() called");
     			this.tasks.tasks[this.tasks.tasks.indexOf(todo)].status = 'completed'; 
+    			var updateTaskInputs = {
+    				operation: 'update',
+    				taskid: todo._id,
+    				status: 'completed'
+    			};
+    			api.updateTask(updateTaskInputs)
+    				.then((resp)=>{
+    					console.log('updateTask resp');
+    				});
     		},
 		},
 
