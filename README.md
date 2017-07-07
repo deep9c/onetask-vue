@@ -1,6 +1,7 @@
 # One-Task
 
 > Vue.js app featuring a task manager with chatbot installed to assist with each task. !!Currently under heavy development!!
+> Deployed in https://onetaskapp.firebaseapp.com
 
 ## Build Setup
 
