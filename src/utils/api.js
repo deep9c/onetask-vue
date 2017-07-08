@@ -1,6 +1,6 @@
 var axios = require('axios');
 axios.defaults.withCredentials = true;	//used to send cookies tokens in request headers
-var nodeurl = 'https://onetasknode.herokuapp.com'; //process.env.NODE_URI || 'http://localhost:3000';
+var nodeurl = process.env.NODE_URI; // || 'https://onetasknode.herokuapp.com'; //'http://localhost:3000';
 
 import api from '../utils/api'
 
