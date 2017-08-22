@@ -1,8 +1,10 @@
 <template>
 <div class="detailBox">
     <div class="titleBox">
-      <label>Comments: {{selectedTask.title}}</label>
-        <button type="button" class="close" aria-hidden="true">&times;</button>
+      <!--label>Comments: {{selectedTask.title}}</label-->
+      <table> <tr> <td> <b>Assignee:</b> {{selectedTask.AssigneeUserId}} </td><td>
+      <AssignTask v-on:assign-task="assignTask"></AssignTask> </td></tr> </table>
+        <!--button type="button" class="close" aria-hidden="true">&times;</button-->
     </div>
     <div class="commentBox">
         
@@ -41,9 +43,14 @@
 
 <script>
 	import api from '../utils/api'
+    import AssignTask from './AssignTask'
 
 	export default{
 		name: 'Comments',
+
+        components: {
+            AssignTask,
+        },
 		
 		props: {
 			selectedTask: {
@@ -99,8 +106,21 @@
      				height: '20px'
    				}, 500, function() {
      			// Animation complete.
-   			});
+   			  });
 			},
+
+            assignTask(assigneeusername){
+                var assignTaskToUser = {
+                    operation: 'update',
+                    taskid: this.selectedTask._id,
+                    AssigneeUserId: assigneeusername.assigneeusername
+                }
+                api.assignTaskToUser(assignTaskToUser)
+                    .then((resp)=>{
+                        console.log('assignTaskToUser response:- ' + JSON.stringify(resp));
+                        this.selectedTask.AssigneeUserId = assigneeusername.assigneeusername;
+                    });
+            },
 		},
 
 		beforeUpdate(){

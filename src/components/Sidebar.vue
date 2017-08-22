@@ -60,6 +60,7 @@
 			createProject(newproj){
 				var createProjInputs = {
 					wsid: this.selectedWs._id,
+          username:api.username,
 					name: newproj.name,
 					description: newproj.description
 				};

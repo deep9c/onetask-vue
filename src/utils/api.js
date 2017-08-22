@@ -87,13 +87,14 @@ export default {
       return axios.post(nodeurl + '/auth/register', userdetails);       
     },
 
-    getWorkspace(workspaceId){
-      return axios.get(nodeurl + '/api/workspace/' + workspaceId);
-    },
-
     getTasks(workspaceId, projId, userId){
       //console.log('getTasks URL --->> '+ nodeurl + '/api/task/' + userId + '/' + workspaceId + '/' + projId);
       return axios.get(nodeurl + '/api/task/' + userId + '/' + workspaceId + '/' + projId);
+    },
+
+    getTasksByAssignee(userId){
+      //console.log('getTasks URL --->> '+ nodeurl + '/api/task/' + userId + '/' + workspaceId + '/' + projId);
+      return axios.get(nodeurl + '/api/task/' + userId);
     },
 
     createTask(createTaskInputs){
@@ -121,8 +122,22 @@ export default {
       return axios.post(nodeurl + '/api/project', createProjInputs);
     },
 
+    getWorkspace(workspaceId){
+      return axios.get(nodeurl + '/api/workspace/' + workspaceId);
+    },
+
     createWorkspace(createWorkspaceInputs){
       return axios.post(nodeurl + '/api/workspace', createWorkspaceInputs);
+    },
+
+    addWorkspaceMember(addWorkspaceMemberInputs){
+      console.log('addWorkspaceMemberInputs requests= ' + JSON.stringify(addWorkspaceMemberInputs));
+      return axios.put(nodeurl + '/api/workspace', addWorkspaceMemberInputs);
+    },
+
+    assignTaskToUser(assignTaskToUserInputs){
+      console.log('assignTaskToUserInputs requests= ' + JSON.stringify(assignTaskToUserInputs));
+      return axios.put(nodeurl + '/api/task', assignTaskToUserInputs);
     },
 
 }

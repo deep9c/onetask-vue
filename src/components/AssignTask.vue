@@ -1,8 +1,5 @@
 <template>
-  <div class='ui basic content center aligned segment'>
-    <label v-for="(members,index) in selectedWs.MemberUserIds" :key="index">
-      <label id="memberIds" v-if="members!=username"> {{members}} &nbsp; </label>
-    </label>
+  <div class='ui basic content center aligned segment'>    
     <button v-on:click="openForm" v-show="!isCreating">
       <i class='glyphicon glyphicon-plus'></i>
     </button>
@@ -10,12 +7,12 @@
       <div class='content'>
         <div class='ui form'>
           <div class='field'>
-            <label>Username</label>
+            <label>Assign task to </label>
             <input v-model="usernameText" type='text' ref='title' defaultValue="">
           </div>          
           <div class='ui two button attached buttons'>
-            <button class='ui basic blue button' v-on:click="addMember">
-              Add
+            <button class='ui basic blue button' v-on:click="assignTask">
+              Assign
             </button>
             <button class='ui basic red button' v-on:click="closeForm">
               Cancel
@@ -31,7 +28,7 @@
 import api from '../utils/api'
 
 export default {
-  name: 'WorkspaceMembers',
+  name: 'AssignTask',
 
   data() {
     return {
@@ -41,44 +38,34 @@ export default {
   },
 
   props: {      
-      selectedWs: {
-        type: Object,
-        required: true,
-      },  
-      username: {
-        type: String,
-        required: true,
-      },    
+        
     },
 
   methods: {
     openForm() {
       //console.log("open form");
       this.isCreating = true;
-      console.log('selectedws= '+JSON.stringify(this.selectedWs));
     },
     closeForm() {
       this.isCreating = false;
     },
-    addMember() {
+    assignTask() {
       //console.log("send form " + this.usernameText.length);
       //take WSID from prop; take userid as input; call Node... Node will respond 404 NotFound is user doesnt exist; or the user details if 200 Success
       if (this.usernameText.length > 0) {
-        const name = this.usernameText;
-        /*this.$emit('add-project', {
-          name,
-        });*/
-
-        var addWorkspaceMemberInputs = {
-          wsid: this.selectedWs._id,
-          userid: this.usernameText
+        const assigneeusername = this.usernameText;
+        this.$emit('assign-task', {
+          assigneeusername,
+        });
+        /*
+        var assignTaskToUser = {
+          assigneeusername: this.usernameText
         }
-        api.addWorkspaceMember(addWorkspaceMemberInputs)
+        api.assignTaskToUser(assignTaskToUser)
           .then((resp)=>{
-            console.log('addWorkspaceMember response:- ' + JSON.stringify(resp));
-            this.selectedWs.MemberUserIds.push(name);
+            console.log('assignTaskToUser response');
           });
-
+        */
 
         this.usernameText='';
       }

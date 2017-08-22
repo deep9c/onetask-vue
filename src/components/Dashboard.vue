@@ -5,7 +5,7 @@
     
     <!-- Top Navbar -->
     <Navbar v-bind:username="user.username" v-bind:selectedWs="selectedWs" v-bind:enrolledWorkspaces="enrolledWorkspaces" 
-      v-on:select-ws="selectWorkspace"></Navbar>
+      v-on:select-ws="selectWorkspace" v-on:show-mytasks="showMyTasks"></Navbar>
     
     <!-- Projects in Sidebar -->
     <Sidebar v-bind:selectedWs="selectedWs" v-on:select-proj="selectProj"></Sidebar>
@@ -25,7 +25,8 @@
 
                     <!-- Panel 2 -->
                     <div class="col-md-6">                    
-                        <Comments v-if="selectedTask._id && taskComments.comments" v-bind:selectedTask="selectedTask" v-bind:taskComments="taskComments.comments" v-bind:username="user.username"></Comments>
+                        <Comments v-if="selectedTask._id && taskComments.comments" v-bind:selectedTask="selectedTask" 
+                          v-bind:taskComments="taskComments.comments" v-bind:username="user.username"></Comments>
                     </div>
                 </div>
             </div>
@@ -145,6 +146,15 @@ export default {
       console.log('selectWorkspace called in dashboard' + JSON.stringify(ws));
       this.selectedWs = ws;   
       this.selectProj(0);  
+    },
+
+    showMyTasks(){
+      api.getTasksByAssignee(this.user.username)
+          .then((resp)=>{
+            console.log('getTasksByAssignee resp::- ' + JSON.stringify(resp.data));
+            this.tasks = resp.data;
+            this.taskComments = {};
+        });
     }
   },
 

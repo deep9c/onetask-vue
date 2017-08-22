@@ -49,7 +49,7 @@ export default {
     },
     sendForm() {
       //console.log("send form " + this.nameText.length);
-      if (this.nameText.length > 0 && this.description.length > 0) {
+      if (this.nameText.length > 0) {
         const name = this.nameText;
         const description = this.description;
         this.$emit('add-project', {

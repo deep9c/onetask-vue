@@ -22,7 +22,7 @@
     							</div>
 
 
-                                <create-todo v-on:add-todo="addTodo"></create-todo>
+                                <create-todo v-if="selectedWsId && selectedProj" v-on:add-todo="addTodo"></create-todo>
                             </div>
                         </div>
 </template>
@@ -43,7 +43,7 @@
 		props: {
 			selectedWsId: {
 				//type: Object,
-				required: true
+				required: false
 			},
 			selectedProj: {
 				type: Object,
@@ -118,8 +118,8 @@
       				operation: 'delete',
       				workspaceid: this.selectedWsId,
       				projectid: this.selectedProj._id,
-    				taskid: todo._id,
-    			};
+    				  taskid: todo._id,
+    			 };
       			api.updateTask(updateTaskInputs)
     				.then((resp)=>{
     					console.log('updateTask resp');

@@ -17,11 +17,13 @@
       </div>
       <div id="navbar" class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
-          <li class="active"><router-link to="/dashboard">Dashboard</router-link></li>          
-          <li><a href="#about">About</a></li>
+          <li class="active" v-on:click="showDashboard($event)"><router-link to="/dashboard">Dashboard</router-link></li>          
+          <li v-on:click="showMyTasks($event)"><a href="#">My Tasks</a></li>
         </ul>
         <ul class="nav navbar-nav pull-right">
-            
+            <li>
+              <WorkspaceMembers v-bind:selectedWs='selectedWs' v-bind:username='username'></WorkspaceMembers>
+            </li>
             <li class="dropdown">              
               <a href="#" id="nbAcctDD" class="dropdown-toggle" data-toggle="dropdown"><li v-if="selectedWs">{{selectedWs.name}}</li></a>
               <ul class="dropdown-menu pull-right">
@@ -47,11 +49,12 @@
 <script>
 	import api from '../utils/api'
   import CreateWorkspace from './CreateWorkspace';
+  import WorkspaceMembers from './WorkspaceMembers';
 	
 	export default{
 		name: 'Navbar',
 
-		components: {CreateWorkspace},
+		components: {CreateWorkspace,WorkspaceMembers},
 
 		props: {
 			username: {
@@ -107,6 +110,18 @@
       selectWorkspace(ws){        
         this.$emit('select-ws', ws);
       },
+
+      showMyTasks(event){
+        $("li").removeClass("active");
+        $(event.currentTarget).addClass('active');
+        this.$emit('show-mytasks');
+      },
+
+      showDashboard(event){
+        $("li").removeClass("active");
+        $(event.currentTarget).addClass('active');
+      },
+
   	},
 	}
 </script>

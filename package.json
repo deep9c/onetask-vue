@@ -2,7 +2,7 @@
   "name": "one-task",
   "version": "1.0.0",
   "description": "Vue.js app featuring a task manager with chatbot installed to assist with each task",
-  "author": "Deep Chakraborty (deep9c@gmail.com)",
+  "author": "Deep Chakraborty (contact@deepchakraborty.com)",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
