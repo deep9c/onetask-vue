@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+//import 'vue-material/dist/vue-material.css'
 
 Vue.config.productionTip = false
 var cors = require('cors');
@@ -17,3 +18,20 @@ new Vue({
   template: '<App/>',
   components: { App }
 })
+
+/*import VueMaterial from 'vue-material'
+import 'vue-material/dist/vue-material.css'
+Vue.use(VueMaterial)*/
+
+//var VueMaterial = require('vue-material')
+//Vue.use(VueMaterial)
+//Vue.use(VueMaterial.MdCore)
+
+/*Vue.material.registerTheme('default', {
+  primary: 'blue',
+  accent: 'aaa',
+  warn: 'red',
+  background: 'white'
+})*/
+
+

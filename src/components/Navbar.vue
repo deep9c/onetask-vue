@@ -104,6 +104,9 @@
             console.log('createWorkspace resp-> ' + JSON.stringify(resp.data));
             //this.selectedWs.projects.push(resp.data);
             //this.selectProj(this.selectedWs.projects.findIndex((p)=>{return p._id == resp.data._id}));
+            this.enrolledWorkspaces.push(resp.data);
+            this.$emit('select-ws', resp.data);
+            //selectWorkspace(resp.data);
           });
       },
 
