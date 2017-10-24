@@ -1,49 +1,45 @@
 <template>
-	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container-fluid">
-      <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-          </button>
-                <div  class="navbar-brand">
-                    <a id="menu-toggle" href="#" class="glyphicon glyphicon-align-justify btn-menu toggle" v-on:click="toggleMenu($event)">
-                        <i class="fa fa-bars"></i>
-                    </a>
-                    <a href="#">OneTask</a>
-                </div>
-      </div>
-      <div id="navbar" class="collapse navbar-collapse">
-        <ul class="nav navbar-nav">
-          <li class="active" v-on:click="showDashboard($event)"><router-link to="/dashboard">Dashboard</router-link></li>          
-          <li v-on:click="showMyTasks($event)"><a href="#">My Tasks</a></li>
-        </ul>
-        <ul class="nav navbar-nav pull-right">
-            <li>
-              <WorkspaceMembers v-bind:selectedWs='selectedWs' v-bind:username='username'></WorkspaceMembers>
-            </li>
-            <li class="dropdown">              
-              <a href="#" id="nbAcctDD" class="dropdown-toggle" data-toggle="dropdown"><li v-if="selectedWs">{{selectedWs.name}}</li></a>
-              <ul class="dropdown-menu pull-right">
-                <li v-for="(ws,index) in enrolledWorkspaces" :key="index">
-                  <a href="#" v-on:click="selectWorkspace(ws)" v-if="ws._id!=selectedWs._id"> {{ws.name}} </a>
-                </li>
-                <li role="separator" class="divider"></li>
-                <li><CreateWorkspace v-on:add-workspace='createWorkspace'></CreateWorkspace></li>
-              </ul>
-            </li> 
-            <li class="dropdown">
-              <a href="#" id="nbAcctDD" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user"></i>{{username}}<i class="icon-sort-down"></i></a>
-              <ul class="dropdown-menu pull-right">
-                <li><router-link to="/login" v-on:click.native="logout">Logout</router-link></li>
-              </ul>
-            </li>            
-        </ul>
-      </div><!--/.nav-collapse -->
-    </div>
-  </nav>
+	<v-toolbar fixed app :clipped-left="clipped" color="primary" dark dense extended>
+    
+      <v-toolbar-side-icon @click.stop="$emit('toggle-drawer', !drawer)"></v-toolbar-side-icon>
+      <v-toolbar-title class="white--text">OneTask</v-toolbar-title>
+      
+      <v-btn flat @click="showDashboard($event)" color="white">
+        Dashboard
+      </v-btn>
+      <v-btn flat @click="showMyTasks($event)" color="white">
+        My Tasks
+      </v-btn>
+
+      <v-spacer></v-spacer>
+      <v-spacer slot="extension"></v-spacer><v-spacer slot="extension"></v-spacer>
+      <v-spacer slot="extension"></v-spacer><v-spacer slot="extension"></v-spacer>
+      <v-spacer slot="extension"></v-spacer><v-spacer slot="extension"></v-spacer>
+      <WorkspaceMembers slot="extension" v-bind:selectedWs='selectedWs' v-bind:username='username'></WorkspaceMembers>
+
+      <v-menu offset-y>
+        <v-btn color="primary" dark slot="activator" v-if="selectedWs">{{selectedWs.name}}</v-btn>
+        <v-list>
+          <v-list-tile v-for="(ws,index) in enrolledWorkspaces" v-if="ws._id!=selectedWs._id" :key="index" @click="selectWorkspace(ws)">
+            <v-list-tile-title>{{ ws.name }}</v-list-tile-title>
+          </v-list-tile>
+          <v-divider light></v-divider>
+          <v-list-tile @click="">
+            <v-list-tile-title><CreateWorkspace v-on:add-workspace='createWorkspace'></CreateWorkspace></v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
+
+      <v-menu offset-y>
+        <v-btn color="primary" dark slot="activator">{{username}}</v-btn>
+        <v-list>          
+          <v-list-tile @click="logout">
+            <v-list-tile-title>Logout</v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-menu>    
+    
+  </v-toolbar>
 </template>
 
 <script>
@@ -68,12 +64,16 @@
       enrolledWorkspaces:{
         type: Array,
         required: true,
+      },
+      drawer:{
+        type: Boolean,
+        required: true,
       }
 		},
 
 		data(){
 			return{
-
+        clipped: true,
 			};
 		},
 		beforeMount(){

@@ -1,26 +1,12 @@
 <template>
-  <div class='ui basic content center aligned segment'>    
-    <button v-on:click="openForm" v-show="!isCreating">
-      <i class='glyphicon glyphicon-plus'></i>
-    </button>
-    <div class='ui centered card' v-show="isCreating">
-      <div class='content'>
-        <div class='ui form'>
-          <div class='field'>
-            <label>Assign task to </label>
-            <input v-model="usernameText" type='text' ref='title' defaultValue="">
-          </div>          
-          <div class='ui two button attached buttons'>
-            <button class='ui basic blue button' v-on:click="assignTask">
-              Assign
-            </button>
-            <button class='ui basic red button' v-on:click="closeForm">
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div>    
+    <v-text-field
+          v-model="usernameText"
+          label="Enter assignee"
+          @change="assignTask"          
+          :prepend-icon="'account_circle'"
+        ></v-text-field>
+
   </div>
 </template>
 
@@ -38,7 +24,10 @@ export default {
   },
 
   props: {      
-        
+        currentAssignee: {
+        type: String,
+        required: true,
+      },  
     },
 
   methods: {

@@ -1,43 +1,129 @@
 <template>
-<div class="detailBox">
-    <div class="titleBox">
-      <!--label>Comments: {{selectedTask.title}}</label-->
-      <table> <tr> <td> <b>Assignee:</b> {{selectedTask.AssigneeUserId}} </td><td>
-      <AssignTask v-on:assign-task="assignTask"></AssignTask> </td></tr> </table>
-        <!--button type="button" class="close" aria-hidden="true">&times;</button-->
-    </div>
-    <div class="commentBox">
-        
-        <p class="taskDescription">{{selectedTask.description}}</p>
-    </div>
-    <div class="actionBox">
-        <ul class="commentList">
-            <li v-for="(comment,index) in taskComments">
-                <div class="commenterImage">
-                  <img src="https://ssl.gstatic.com/accounts/ui/avatar_2x.png" />
-                  <!-- <i class='glyphicon glyphicon-user'></i> -->
-                </div>
-                <div class="commentText"><strong>{{comment.CommenterUserId}}</strong>
-                  <span class="date sub-text">on {{new Date(comment.createdDateTime).toDateString()}}</span>
-                    <p class="">{{comment.content}}</p> 
 
-                </div>
-            </li>
-                                                  
-        </ul>
+
+
+<v-card>
+    <v-card-actions>
+    <v-tooltip bottom>
+        <v-btn round flat @click="assigneechip=false" v-show="assigneechip" slot="activator">
+            <v-chip close v-model="assigneechip" @input="">
+                <v-avatar class="teal">
+                    <span class="white--text">{{selectedTask.AssigneeUserId.substring(0,1).toUpperCase()}} </span>
+                </v-avatar>
+                {{selectedTask.AssigneeUserId}} 
+            </v-chip>
+        </v-btn>
+        <span>Assignee : </br>This task will appear in the </br> Assignee's My Tasks list</span>
+    </v-tooltip>
+        <!--
+        <AssignTask v-show="!assigneechip" v-bind:currentAssignee="selectedTask.AssigneeUserId" v-on:assign-task="assignTask"></AssignTask>
+        -->
+        <v-text-field
+            v-show="!assigneechip"
+            v-model="assigneeusername"
+            label="Enter assignee"
+            @blur="assignTask"          
+            :prepend-icon="'account_circle'"
+            autofocus
+        ></v-text-field>
+
+    </v-card-actions>
+
+
+    <v-card-text>
+        <div class="headline">
+            <v-text-field
+              v-model="selectedTask.title"
+              label="Hint Text"
+              value="Input text"
+              single-line
+              @change="editTodo"
+            ></v-text-field>
+            <!--
+            <v-text-field
+              color="teal"
+              multi-line
+              v-model="selectedTask.description"
+              @change="editTodo"
+            >
+              <div slot="label">
+                Task Description
+              </div>
+            </v-text-field>
+            -->
+            <v-text-field
+                v-model="selectedTask.description"
+                label="Task Description"
+                @change="editTodo"
+                textarea
+                auto-grow
+                rows="1"
+              ></v-text-field>                    
+        </div>
+        <v-divider></v-divider>
+
+        <!--
+        <v-list three-line>         
+            <v-list-tile avatar v-for="(comment,index) in taskComments">                
+              <v-list-tile-avatar size="36px">
+                <v-icon large color="indigo">account_circle</v-icon>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title>{{comment.CommenterUserId}} <small>on {{new Date(comment.createdDateTime).toDateString()}}</small></v-list-tile-title>
+                <v-list-tile-sub-title><pre>{{comment.content}}</pre></v-list-tile-sub-title>
+              </v-list-tile-content>
+            </v-list-tile>
+        </v-list>
+        -->    
+        
+        <v-card-title>
+            <v-container fluid grid-list-md v-for="(comment,index) in taskComments" :key="index">
+                <v-layout row wrap>
+                    <v-flex d-flex xs1 sm1>
+                        <v-avatar size="30px" class="indigo"><span class="white--text">{{comment.CommenterUserId.substring(0,1).toUpperCase()}}</span></v-avatar>
+                    </v-flex>
+                    <v-flex d-flex>
+                        <v-layout row wrap>
+                            <v-flex d-flex xs12>
+                                <strong class="text-sm-left">{{comment.CommenterUserId}}</strong> <small class="text-sm-right">on {{new Date(comment.createdDateTime).toDateString()}}</small>
+                            </v-flex>
+                            <v-flex d-flex xs12>
+                                <pre class="text-sm-left">{{comment.content}}</pre>
+                            </v-flex>
+                        </v-layout>
+                    </v-flex>
+                </v-layout>
+                <v-divider></v-divider>
+            </v-container>
+        </v-card-title>
+    
+        <v-text-field textarea color="teal" rows=1 v-model="newcomment"
+            v-on:focus='textboxFocus($event)' v-on:blur='textboxBlur($event)' label="Write a comment..."></v-text-field>
+
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn small dark color="teal" v-on:click='submit($event)' v-if=showcommentbutton>Comment</v-btn>
+        </v-card-actions>
+    </v-card-text>
+
+
+
+    <!--
+    <div class="actionBox">
         <form class="form-inline" role="form">
             <div class="form-group">
                 <input class="form-control" type="text" id="box" style="width: 300px; height: 20px" placeholder="Your comments" 
                     v-model="newcomment" v-on:focus='textboxFocus($event)' v-on:blur='textboxBlur($event)'/>
             </div>
             <div class="form-group">
-                <!-- <button class="btn btn-default" v-on:click='submit($event)'>Add</button> -->
+                <!-- <button class="btn btn-default" v-on:click='submit($event)'>Add</button> ->
                 <input type="submit" class="btn btn-default" 
                         	value="Add" v-on:click='submit($event)'>
             </div>
         </form>
     </div>
-</div>
+    -->
+</v-card>
 
 </template>
 
@@ -69,12 +155,16 @@
 
 		data(){
 			return{				
-				newcomment: ''
+				newcomment: '',
+                assigneechip: true,
+                assigneeusername:'',
+                showcommentbutton: false
 			}
 		},
 
 		methods: {
 			submit(e){
+                console.log("comment button clicked");
 				e.preventDefault();
 				var submitcommentreq = {
 					content: this.newcomment,
@@ -93,32 +183,52 @@
 
 			textboxFocus(e){
 				$(e.currentTarget).animate({
-    				width: '300px',
+    				//width: '300px',
     				height: '100px'
-  				}, 500, function() {
+  				}, 100, function() {
     			// Animation complete.
   				});
+                this.showcommentbutton=true;
 			},
 
 			textboxBlur(e){
 				$(e.currentTarget).animate({
-     				width: '300px',
-     				height: '20px'
-   				}, 500, function() {
+     				//width: '300px',
+     				height: '30px'
+   				}, 100, function() {
      			// Animation complete.
    			  });
+                if(this.newcomment.length==0)
+                    this.showcommentbutton=false;
 			},
 
-            assignTask(assigneeusername){
+            assignTask(){
+                if(this.assigneeusername.length>0){
                 var assignTaskToUser = {
                     operation: 'update',
                     taskid: this.selectedTask._id,
-                    AssigneeUserId: assigneeusername.assigneeusername
+                    AssigneeUserId: this.assigneeusername
                 }
                 api.assignTaskToUser(assignTaskToUser)
                     .then((resp)=>{
                         console.log('assignTaskToUser response:- ' + JSON.stringify(resp));
-                        this.selectedTask.AssigneeUserId = assigneeusername.assigneeusername;
+                        this.selectedTask.AssigneeUserId = this.assigneeusername;
+                    });
+                }
+                this.assigneechip=true;
+            },
+
+            editTodo() {
+                console.log("editTodo() of Comments.vue called");               
+                var updateTaskInputs = {
+                    operation: 'update',
+                    taskid: this.selectedTask._id,
+                    title: this.selectedTask.title,
+                    description: this.selectedTask.description
+                };
+                api.updateTask(updateTaskInputs)
+                    .then((resp)=>{
+                        console.log('updateTask resp');
                     });
             },
 		},
@@ -132,75 +242,5 @@
 
 
 <style>
-.thumbnail {
-    padding:0px;
-}
-.detailBox {
-	position:relative;
-	border:1px solid #bbb;
-}
 
-
-
-.titleBox {
-    background-color:#fdfdfd;
-    padding:10px;
-}
-.titleBox label{
-  color:#444;
-  margin:0;
-  display:inline-block;
-}
-
-.commentBox {
-    padding:10px;
-    border-top:1px dotted #bbb;
-}
-.commentBox .form-group:first-child, .actionBox .form-group:first-child {
-    width:80%;
-}
-.commentBox .form-group:nth-child(2), .actionBox .form-group:nth-child(2) {
-    width:18%;
-}
-.actionBox .form-group * {
-    width:100%;
-}
-.taskDescription {
-    margin-top:10px 0;
-}
-.commentList {
-    padding:0;
-    list-style:none;
-    /*max-height:200px;*/
-    overflow:auto;
-}
-.commentList li {
-    margin:0;
-    margin-top:10px;
-}
-.commentList li > div {
-    display:table-cell;
-}
-.commenterImage {
-    width:30px;
-    margin-right:5px;
-    height:100%;
-    float:left;
-}
-.commenterImage img {
-    width:100%;
-    border-radius:50%;
-}
-.commentText p {
-    margin:0;
-}
-.sub-text {
-    color:#aaa;
-    font-family:verdana;
-    font-size:11px;
-}
-.actionBox {
-    border-top:1px dotted #bbb;
-    padding:10px;
-}
 </style>

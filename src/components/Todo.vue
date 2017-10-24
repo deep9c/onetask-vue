@@ -4,30 +4,49 @@
   <div>
     
 
-    <a id="todoanchor" href="#" class="list-group-item" v-on:click="selectTask(todo,$event)" v-show="!isEditing">
-      <div class='glyphicon glyphicon-ok-circle' v-if="todo.status==='completed'"> <!--show if v-show is true-->
-        <!-- Completed -->
-      </div>
-      <div class='glyphicon glyphicon-time' v-if="todo.status=='pending'" v-on:click="completeTodo(todo)">
-        <!-- Complete -->
-      </div>
-        
-          {{ todo.title }}
-        
-        <!--<div class='meta'>
-          {{ todo.description }}
-        </div>-->
+    <v-list-tile id="todoanchor" v-on:click="selectTask(todo,$event)" v-show="!isEditing">
+      <!--
+      <v-list-tile-action v-if="todo.status==='completed'"> 
+        <v-icon>check_circle</v-icon>
+      </v-list-tile-action>
+      <v-list-tile-action v-if="todo.status=='pending'" v-on:click="completeTodo(todo)">
+        <v-icon>schedule</v-icon>
+      </v-list-tile-action>
+      -->
+      
+      <v-list-tile-content>
+        <v-text-field
+          v-model="todo.title"              
+          single-line
+          full-width
+          hide-details
+          @change="hideForm(todo)"
+          :append-icon="'delete'"
+          :append-icon-cb="() => deleteTodo(todo)"
+          :prepend-icon="todo.status=='pending' ? 'check_box_outline_blank' : 'check_box'"
+          :prepend-icon-cb="() => completeTodo(todo)"
+        ></v-text-field>
+      </v-list-tile-content>
                 
-          <span class='badge' v-on:click="deleteTodo(todo)">
-            <i class='trash icon'></i>
-          </span>
+      <!--<div class='meta'>
+        {{ todo.description }}
+      </div>
+      -->
 
-          <span class='badge' v-on:click="showForm">
-            <i class='edit icon'></i>
-          </span>              
-    </a>
+      <!--
+      <v-list-tile-action v-on:click="deleteTodo(todo)">
+        <v-icon>delete</v-icon>
+      </v-list-tile-action>
+      -->
+          
+      <!--
+      <span class='badge' v-on:click="showForm">
+        <i class='edit icon'></i>
+      </span>       
+      -->       
+    </v-list-tile>
 
-    <!-- form is visible when we are in editing mode -->
+    <!-- form is visible when we are in editing mode 
     <div class="content" v-show="isEditing">
       <div class='ui form'>
         <div class='field'>
@@ -45,8 +64,8 @@
         </div>
       </div>
     </div>
-
-      
+    -->
+    <v-divider inset></v-divider>
   </div>  
 </template>
 
@@ -71,7 +90,9 @@ export default {
       this.$emit('delete-todo', todo);
     },
     completeTodo(todo) {
+      if(this.todo.status=='pending'){
         this.$emit('complete-todo', todo);
+      }
     },
     selectTask(todo,e){
       //console.log('showcom called todo');  

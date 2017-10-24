@@ -1,31 +1,35 @@
 <template>
-  <div class='ui basic content center aligned segment'>
-    <button v-on:click="openForm" v-show="!isCreating">
-      <i class='glyphicon glyphicon-plus'></i>
-    </button>
-    <div class='ui centered card' v-show="isCreating">
-      <div class='content'>
-        <div class='ui form'>
-          <div class='field'>
-            <label>Name</label>
-            <input v-model="nameText" type='text' ref='title' defaultValue="">
-          </div>
-          <div class='field'>
-            <label>Description</label>
-            <input v-model="description" type='text' ref='project' defaultValue="">
-          </div>
-          <div class='ui two button attached buttons'>
-            <button class='ui basic blue button' v-on:click="sendForm">
-              Create
-            </button>
-            <button class='ui basic red button' v-on:click="closeForm">
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <v-layout row justify-center>
+    <v-dialog v-model="dialog" persistent max-width="500px">
+      <v-btn slot="activator" fab small flat class='text-xs-center' v-on:click="openForm">
+        <v-icon>add</v-icon>
+      </v-btn>
+      <v-card>
+        <v-card-title>
+          <span class="headline">New Project</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container grid-list-md>
+            <v-layout wrap>              
+              <v-flex xs12>
+                <v-text-field label="Project Name" v-model="nameText" required></v-text-field>
+              </v-flex>
+              <v-flex xs12>
+                <v-text-field label="Project Description" v-model="description" multi-line></v-text-field>
+              </v-flex>
+                            
+            </v-layout>
+          </v-container>
+          <small>*indicates required field</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" flat @click.native="closeForm">Close</v-btn>
+          <v-btn color="blue darken-1" flat @click.native="sendForm">Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-layout>
 </template>
 
 <script>
@@ -36,7 +40,7 @@ export default {
     return {
       nameText: '',
       description: '',
-      isCreating: false,
+      dialog: false,
     };
   },
   methods: {
@@ -45,7 +49,8 @@ export default {
       this.isCreating = true;
     },
     closeForm() {
-      this.isCreating = false;
+      //this.isCreating = false;
+      this.dialog = false;
     },
     sendForm() {
       //console.log("send form " + this.nameText.length);
@@ -60,7 +65,8 @@ export default {
         this.nameText='';
         this.description='';
       }
-      this.isCreating = false;
+      //this.isCreating = false;
+      this.dialog = false;
     },
   },
 };

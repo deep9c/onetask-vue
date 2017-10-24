@@ -1,30 +1,31 @@
 <template>
-	<div class="panel panel-warning">
-                            <div class="panel-heading">
-                                    <!-- Panel 1 -->
-                                    <strong>Tasks: </strong> <!-- {{selectedProj.name}} -->
-                            </div>
-                            <div class="panel-body">
-                                <!-- content body 
-                                <todo-list v-bind:todos="tasks.tasks" v-on:select-task="selectTask"></todo-list>
-                                -->
-                                <!--
-    							<p v-if="tasks.tasks">Completed Tasks: {{tasks.tasks.filter(todo => {return todo.status === 'completed'}).length}}</p>
-    							<p v-if="tasks.tasks">Pending Tasks: {{tasks.tasks.filter(todo => {return todo.status === 'pending'}).length}}</p>
-    							-->
+  <!-- <strong>Tasks: </strong> {{selectedProj.name}} -->
+	<v-card>
+    <v-card-text class="px-0">                    
+      <!-- content body 
+      <todo-list v-bind:todos="tasks.tasks" v-on:select-task="selectTask"></todo-list>
+      -->
+      <!--
+    	<p v-if="tasks.tasks">Completed Tasks: {{tasks.tasks.filter(todo => {return todo.status === 'completed'}).length}}</p>
+    	<p v-if="tasks.tasks">Pending Tasks: {{tasks.tasks.filter(todo => {return todo.status === 'pending'}).length}}</p>
+    	-->
 
-    							<div class="list-group">
-    							<todo v-on:delete-todo="deleteTodo" v-on:complete-todo="completeTodo" v-on:edit-todo="editTodo" 
-    								v-for="(todo,index) in tasks.tasks" 
-      								v-bind:todo="todo" :key="index" :todo.sync="todo" v-on:select-task="selectTask">      
-  								</todo>
-  								<!-- todo.sync used for completeTodo function to work -->
-    							</div>
-
-
-                                <create-todo v-if="selectedWsId && selectedProj" v-on:add-todo="addTodo"></create-todo>
-                            </div>
-                        </div>
+    	<v-list dense>
+        <v-subheader>
+          <v-btn dark small round color="teal" @click="isCreatingProp=true">Add Task</v-btn>
+        </v-subheader>
+  
+    		<todo v-on:delete-todo="deleteTodo" v-on:complete-todo="completeTodo" v-on:edit-todo="editTodo" 
+    			v-for="(todo,index) in tasks.tasks" 
+      		v-bind:todo="todo" :key="index" :todo.sync="todo" v-on:select-task="selectTask">      
+  			</todo>
+  			<!-- todo.sync used for completeTodo function to work -->
+        <create-todo v-if="selectedWsId && selectedProj" v-on:add-todo="addTodo" v-on:falsify-creatingform="isCreatingProp=false"
+          v-bind:isCreatingProp="isCreatingProp"></create-todo>
+    	</v-list>
+                     
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
@@ -61,6 +62,7 @@
 
 		data(){
 			return{
+        isCreatingProp: false,
 				/*todosarray:  [
                 {
                   title: 'Todo A',
@@ -127,7 +129,7 @@
     		},
 
     		editTodo(todo) {
-      			console.log("editTodo() called");    			
+      		console.log("editTodo() called");    			
     			var updateTaskInputs = {
     				operation: 'update',
     				taskid: todo._id,

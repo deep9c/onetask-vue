@@ -1,35 +1,38 @@
 <template>
-  <form id="login-form" role="form" style="display: block;">
-  <div class="alert alert-danger" v-if="error">
-    <p>{{ error }}</p>
-  </div>
-  <div class="form-group">
-    <input type="text"required name="username" id="username" tabindex="1" class="form-control" placeholder="Username" v-model="credentials.username">
-  </div>
-    <div class="form-group">
-      <input type="password"required name="password" id="password" tabindex="2" class="form-control" placeholder="Password" v-model="credentials.password">
-    </div>
-      <div class="form-group text-center">
-        <input type="checkbox" tabindex="3" class="" name="remember" id="remember">
-          <label for="remember"> Remember Me</label>
-      </div>
-        <div class="form-group">
-          <div class="row">
-            <div class="col-sm-6 col-sm-offset-3">
-              <button name="login-submit" id="login-submit"  tabindex="4" class="form-control btn btn-primary" v-on:click="submit($event)">Log In</button>
-            </div>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="row">
-            <div class="col-lg-12">
-              <div class="text-center">
-                <a href="#" tabindex="5" class="forgot-password">Forgot Password?</a>
-              </div>
-            </div>
-          </div>
-        </div>
-  </form>
+  <v-form id="login-form" v-model="valid" ref="form" lazy-validation>
+      <v-alert v-if="error" color="error" icon="warning" value="true">
+        {{ error }}
+      </v-alert>
+      <v-text-field
+        label="Username"
+        v-model="credentials.username"
+        :rules="usernameRules"
+        required
+      ></v-text-field>
+      <v-text-field
+        label="Password"
+        v-model="credentials.password"
+        hint="At least 4 characters"
+        min="4"
+        :append-icon="e1 ? 'visibility' : 'visibility_off'"
+        :append-icon-cb="() => (e1 = !e1)"
+        :type="e1 ? 'password' : 'text'"
+        :rules="pwdRules"
+        counter
+        required
+        ></v-text-field>
+     
+      
+  
+      <v-btn
+        color="primary"
+        @click="submit"
+        :disabled="!valid"
+      >
+        Login
+      </v-btn>
+      <v-btn @click="clear">clear</v-btn>
+    </v-form>
 </template>
 
 <script>
@@ -45,7 +48,19 @@ export default {
           username: '',
           password: ''
         },
-        error: ''
+        error: '',
+
+        valid: true,
+        e1: true,    
+        usernameRules: [
+          (v) => !!v || 'Username is required',
+          //(v) => v && v.length <= 10 || 'Username must be less than 10 characters'
+        ],
+        pwdRules: [
+          (v) => !!v || 'Password is required',
+          //(v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+        ],
+
     };
   },
   beforeCreate(){
@@ -54,9 +69,8 @@ export default {
     
   },
   methods: {
-    submit(e) {
-        if($('#login-form')[0].checkValidity()){  //checkValidity() is HTML5 thingy that validates the checks in all textboxes within the said form
-          e.preventDefault();
+    submit () {
+      if (this.$refs.form.validate()) {
         var credentials = {
           username: this.credentials.username,
           password: this.credentials.password
@@ -69,39 +83,17 @@ export default {
           .catch((error)=>{
             this.error = error.response.data;
           });  
-        }      
       }
+    },
+    clear () {
+      this.$refs.form.reset()
+    }
   },
 
 }
 </script>
 
 <style>
-.btn-login {
-  background-color: #59B2E0;
-  outline: none;
-  color: #fff;
-  font-size: 14px;
-  height: auto;
-  font-weight: normal;
-  padding: 14px 0;
-  text-transform: uppercase;
-  border-color: #59B2E6;
-}
-.btn-login:hover,
-.btn-login:focus {
-  color: #fff;
-  background-color: #53A3CD;
-  border-color: #53A3CD;
-}
-.forgot-password {
-  text-decoration: underline;
-  color: #888;
-}
-.forgot-password:hover,
-.forgot-password:focus {
-  text-decoration: underline;
-  color: #666;
-}
+
 
 </style>

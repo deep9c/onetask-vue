@@ -4,7 +4,7 @@
       <label id="memberIds" v-if="members!=username"> {{members}} &nbsp; </label>
     </label>
     <button v-on:click="openForm" v-show="!isCreating">
-      <i class='glyphicon glyphicon-plus'></i>
+      <v-icon>add</v-icon>
     </button>
     <div class='ui centered card' v-show="isCreating">
       <div class='content'>

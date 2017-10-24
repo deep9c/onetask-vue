@@ -1,8 +1,28 @@
 <template>
-  <div class='ui basic content center aligned segment'>
-    <button class='ui basic button icon' v-on:click="openForm" v-show="!isCreating">
-      <i class='plus icon'></i>
-    </button>
+  <div>
+  <!--
+  <v-btn fab flat small class='text-xs-center' v-on:click="openForm" v-show="!isCreating">
+    <v-icon>add</v-icon>
+  </v-btn>
+  -->
+  <v-list-tile>
+  <v-list-tile-content>
+    
+  <v-text-field ref="createtaskinput"
+    v-show="isCreating"
+    v-model="titleText"              
+    label="Write a new task name"
+    @change="sendForm"
+    @blur="closeForm"
+    single-line
+    full-width
+    hide-details
+    autofocus
+  ></v-text-field>
+
+  </v-list-tile-content>
+
+    <!--
     <div class='ui centered card' v-show="isCreating">
       <div class='content'>
         <div class='ui form'>
@@ -25,6 +45,8 @@
         </div>
       </div>
     </div>
+    -->
+  </v-list-tile>
   </div>
 </template>
 
@@ -37,17 +59,39 @@ export default {
       isCreating: false,
     };
   },
+
+  props: {
+    isCreatingProp: {
+      type: Boolean,
+      required: true
+    },      
+  },
+
+  watch : {
+    isCreatingProp : function (value) {
+      //console.log('drawer changed to '+value);
+
+      this.isCreating = value;      
+      this.$refs.createtaskinput.focus();
+    }
+  },
+
   methods: {
     openForm() {
       //console.log("open form");
+      
       this.isCreating = true;
+      this.$refs.createtaskinput.focus();
     },
     closeForm() {
-      this.isCreating = false;
+      if (this.titleText.length == 0) {
+        this.isCreating = false;
+        this.$emit('falsify-creatingform', false);
+      }
     },
     sendForm() {
       //console.log("send form " + this.titleText.length);
-      if (this.titleText.length > 0 && this.description.length > 0) {
+      if (this.titleText.length > 0) {
         const title = this.titleText;
         const description = this.description;
         this.$emit('add-todo', {

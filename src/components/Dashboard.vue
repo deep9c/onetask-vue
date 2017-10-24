@@ -1,38 +1,92 @@
 <template>
-  <div id="wrapper">
-    <!--<img src="./assets/logo.png">-->
-    <!--<router-view></router-view>-->    
-    
+  <div>     
+      
+    <!-- Projects in Sidebar -->
+    <Sidebar v-bind:selectedWs="selectedWs" v-on:select-proj="selectProj" v-bind:drawer="drawer"></Sidebar>
+
     <!-- Top Navbar -->
     <Navbar v-bind:username="user.username" v-bind:selectedWs="selectedWs" v-bind:enrolledWorkspaces="enrolledWorkspaces" 
-      v-on:select-ws="selectWorkspace" v-on:show-mytasks="showMyTasks"></Navbar>
+      v-on:select-ws="selectWorkspace" v-on:show-mytasks="showMyTasks" v-bind:drawer="drawer" v-on:toggle-drawer="drawer=!drawer"></Navbar>
     
-    <!-- Projects in Sidebar -->
-    <Sidebar v-bind:selectedWs="selectedWs" v-on:select-proj="selectProj"></Sidebar>
+    <!--
+    <main>
+      <v-content>
+        <v-container grid-list-md text-xs-center>          
+            <v-layout row wrap>
+
+              <v-flex md6>
+                <v-card>
+                  <v-card-text class="px-0">
+                    <v-list dense>
+                      <v-list-tile avatar v-for="item in items" v-bind:key="item.title" @click="">
+                        <v-list-tile-action>
+                          <v-icon>check_circle</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                          <v-text-field              
+                            label="Hint Text"
+                            :value="item.title"              
+                            single-line
+                          ></v-text-field>
+                        </v-list-tile-content>
+                        <v-list-tile-action>
+                          <v-icon>delete</v-icon>
+                        </v-list-tile-action>
+                      </v-list-tile>
+                    </v-list>
+                  </v-card-text>
+                </v-card>
+              </v-flex>
+
+              <v-flex md6>
+                <v-card dark color="green darken-1">
+                  <v-card-text class="px-0">6</v-card-text>
+                </v-card>
+              </v-flex>
+
+            </v-layout>          
+        </v-container>
+      </v-content>
+    </main>
+-->
 
     <!-- Page content -->
-    <div id="page-content-wrapper">
-        <div class="page-content">
-            <div class="container-fluid">
-                <div class="row">
+    <main>
+      <v-content>
+        <v-container grid-list-md text-xs-center>          
+          <v-layout row wrap>
 
-                    <!-- Panel 1 -->
-                    <div class="col-md-6">
-                        <Tasks v-bind:tasks="tasks" v-bind:selectedWsId="selectedWs._id"  v-bind:selectedProj="selectedProj" 
-                          v-bind:username="user.username" v-on:select-task="selectTask">
-                        </Tasks>
-                    </div>
+                    
+            <v-flex md6>
+              <Tasks v-bind:tasks="tasks" v-bind:selectedWsId="selectedWs._id"  v-bind:selectedProj="selectedProj" 
+                v-bind:username="user.username" v-on:select-task="selectTask">
+              </Tasks>
+            </v-flex>
 
-                    <!-- Panel 2 -->
-                    <div class="col-md-6">                    
-                        <Comments v-if="selectedTask._id && taskComments.comments" v-bind:selectedTask="selectedTask" 
-                          v-bind:taskComments="taskComments.comments" v-bind:username="user.username"></Comments>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                    
+            <v-flex md6>
+              
+              <Comments v-if="selectedTask._id && taskComments.comments" v-bind:selectedTask="selectedTask" 
+                v-bind:taskComments="taskComments.comments" v-bind:username="user.username">
+              </Comments>
+              <!--
+              <v-card dark color="green darken-1">
+                <v-card-text class="px-0">6</v-card-text>
+              </v-card>
+              -->
+            </v-flex>
 
+          </v-layout>          
+        </v-container>
+      </v-content>
+    </main>
+
+
+  <!--
+  <v-footer :fixed="fixed" app>
+      <span>&copy; 2017</span>
+    </v-footer>
+  -->
     
   </div>
 </template>
@@ -59,7 +113,8 @@ export default {
   },
   data () {
     return {
-      
+        drawer: true,
+        fixed: true,
         //username: '',
         user: api.user,
         enrolledWorkspaces: [],
@@ -69,6 +124,13 @@ export default {
         tasks: {},
         selectedTask: {},
         taskComments: {},
+
+        items: [
+          { icon: true, title: 'Jason Oner', avatar: '/static/doc-images/lists/1.jpg' },
+          { title: 'Travis Howard', avatar: '/static/doc-images/lists/2.jpg' },
+          { title: 'Ali Connors', avatar: '/static/doc-images/lists/3.jpg' },
+          { title: 'Cindy Baker', avatar: '/static/doc-images/lists/4.jpg' },
+        ]
     };
   },
   created(){

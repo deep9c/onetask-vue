@@ -5,6 +5,9 @@ import App from './App'
 import router from './router'
 //import 'vue-material/dist/vue-material.css'
 
+import Vuetify from 'vuetify'
+Vue.use(Vuetify)
+
 Vue.config.productionTip = false
 var cors = require('cors');
 //Vue.use(cors({ origin: "http://localhost:8080", credentials: false}));   //used for cross-domain requests

@@ -1,10 +1,13 @@
  <template>
-    <div>
+
     
-    <div class="container">
+    
+    <!--div class="container"-->
+    <v-app id="inspire" light>
       <router-view></router-view>
-    </div>
-    </div>
+    </v-app>
+    <!--/div-->
+    
 </template>
 
 <script>
@@ -13,10 +16,10 @@
   export default {
    name: 'app',
 
-   
-
-    methods: {
-      
+   data () {
+      return {
+        
+      }
     }
   }
 </script>
