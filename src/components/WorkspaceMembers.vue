@@ -1,31 +1,45 @@
 <template>
-  <div class='ui basic content center aligned segment'>
-    <label v-for="(members,index) in selectedWs.MemberUserIds" :key="index">
-      <label id="memberIds" v-if="members!=username"> {{members}} &nbsp; </label>
-    </label>
-    <button v-on:click="openForm" v-show="!isCreating">
-      <v-icon>add</v-icon>
-    </button>
-    <div class='ui centered card' v-show="isCreating">
-      <div class='content'>
-        <div class='ui form'>
-          <div class='field'>
-            <label>Username</label>
-            <input v-model="usernameText" type='text' ref='title' defaultValue="">
-          </div>          
-          <div class='ui two button attached buttons'>
-            <button class='ui basic blue button' v-on:click="addMember">
-              Add
-            </button>
-            <button class='ui basic red button' v-on:click="closeForm">
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <v-layout row justify-center>
+    <v-tooltip bottom  v-for="(members,index) in selectedWs.MemberUserIds" :key="index" v-if="members._id!=username" class="pa-1">
+    <v-avatar size="30px" class="indigo" slot="activator">
+      <span class="white--text">
+        {{members.name.charAt(0).toUpperCase()}}{{members.name.split(" ").pop().charAt(0).toUpperCase()}}
+      </span>
+    </v-avatar>
+    <span>{{members.name}} </br> {{members.email}}</span>
+    </v-tooltip>
+
+
+    <v-dialog v-model="dialog" persistent max-width="500px">
+      <v-btn slot="activator" fab small flat class='text-xs-center' v-on:click="openForm">        
+        <v-icon>person_add</v-icon>
+      </v-btn>
+      <v-card>
+        <v-card-title>
+          <span class="headline">Add New Member</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container grid-list-md>
+            <v-layout wrap>              
+              <v-flex xs12>
+                <v-text-field label="Enter Name" v-model="usernameText" required></v-text-field>
+              </v-flex>              
+                            
+            </v-layout>
+          </v-container>
+          <small>*indicates required field</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" flat @click.native="closeForm">Close</v-btn>
+          <v-btn color="blue darken-1" flat @click.native="addMember">Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-layout>
 </template>
+
+
 
 <script>
 import api from '../utils/api'
@@ -37,6 +51,7 @@ export default {
     return {
       usernameText: '',      
       isCreating: false,
+      dialog: false,
     };
   },
 
@@ -58,7 +73,8 @@ export default {
       console.log('selectedws= '+JSON.stringify(this.selectedWs));
     },
     closeForm() {
-      this.isCreating = false;
+      //this.isCreating = false;
+      this.dialog = false;
     },
     addMember() {
       //console.log("send form " + this.usernameText.length);
@@ -76,13 +92,14 @@ export default {
         api.addWorkspaceMember(addWorkspaceMemberInputs)
           .then((resp)=>{
             console.log('addWorkspaceMember response:- ' + JSON.stringify(resp));
-            this.selectedWs.MemberUserIds.push(name);
+            this.selectedWs.MemberUserIds.push(resp.data);
           });
 
 
         this.usernameText='';
       }
-      this.isCreating = false;
+      //this.isCreating = false;
+      this.dialog = false;
     },
   },
 };

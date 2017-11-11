@@ -6,7 +6,8 @@
 
     <!-- Top Navbar -->
     <Navbar v-bind:username="user.username" v-bind:selectedWs="selectedWs" v-bind:enrolledWorkspaces="enrolledWorkspaces" 
-      v-on:select-ws="selectWorkspace" v-on:show-mytasks="showMyTasks" v-bind:drawer="drawer" v-on:toggle-drawer="drawer=!drawer"></Navbar>
+      v-on:select-ws="selectWorkspace" v-on:show-mytasks="showMyTasks" v-bind:drawer="drawer"
+      v-on:toggle-drawer="drawer=!drawer"></Navbar>
     
     <!--
     <main>
@@ -67,7 +68,7 @@
             <v-flex md6>
               
               <Comments v-if="selectedTask._id && taskComments.comments" v-bind:selectedTask="selectedTask" 
-                v-bind:taskComments="taskComments.comments" v-bind:username="user.username">
+                v-bind:taskComments="taskComments.comments" v-bind:username="user.username" v-bind:selectedWs="selectedWs">
               </Comments>
               <!--
               <v-card dark color="green darken-1">
@@ -124,13 +125,7 @@ export default {
         tasks: {},
         selectedTask: {},
         taskComments: {},
-
-        items: [
-          { icon: true, title: 'Jason Oner', avatar: '/static/doc-images/lists/1.jpg' },
-          { title: 'Travis Howard', avatar: '/static/doc-images/lists/2.jpg' },
-          { title: 'Ali Connors', avatar: '/static/doc-images/lists/3.jpg' },
-          { title: 'Cindy Baker', avatar: '/static/doc-images/lists/4.jpg' },
-        ]
+        
     };
   },
   created(){
@@ -146,6 +141,11 @@ export default {
           //console.log('getWorkspace response:-> ' + JSON.stringify(resp.data));
           this.enrolledWorkspaces.push(resp.data);
           //console.log('enrolledWorkspace ' +index+ ':: ' + JSON.stringify(this.enrolledWorkspaces));
+          /*resp.data.MemberUserIds.map((user)=>{
+            if(!this.otherusers[user._id]){
+              this.otherusers[user._id] = {name:user.name, email:user.email};
+            }
+          });*/
         });
     });
     

@@ -9,7 +9,7 @@
   <v-list-tile-content>
     
   <v-text-field ref="createtaskinput"
-    v-show="isCreating"
+    v-if="isCreating"
     v-model="titleText"              
     label="Write a new task name"
     @change="sendForm"
@@ -72,7 +72,7 @@ export default {
       //console.log('drawer changed to '+value);
 
       this.isCreating = value;      
-      this.$refs.createtaskinput.focus();
+      //this.$refs.createtaskinput.focus();
     }
   },
 

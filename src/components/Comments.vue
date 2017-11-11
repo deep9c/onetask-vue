@@ -4,28 +4,90 @@
 
 <v-card>
     <v-card-actions>
+
+    <!--
     <v-tooltip bottom>
-        <v-btn round flat @click="assigneechip=false" v-show="assigneechip" slot="activator">
-            <v-chip close v-model="assigneechip" @input="">
+        
+            <v-chip close v-model="assigneechip" @input="" @click="assigneechip=false" v-show="assigneechip" slot="activator" style="cursor: pointer">
                 <v-avatar class="teal">
-                    <span class="white--text">{{selectedTask.AssigneeUserId.substring(0,1).toUpperCase()}} </span>
+                    <span class="white--text">{{selectedTask.AssigneeUserId.name.charAt(0).toUpperCase()}}{{selectedTask.AssigneeUserId.name.split(" ").pop().charAt(0).toUpperCase()}} </span>
                 </v-avatar>
-                {{selectedTask.AssigneeUserId}} 
+                {{selectedTask.AssigneeUserId.name}} 
             </v-chip>
-        </v-btn>
+        
         <span>Assignee : </br>This task will appear in the </br> Assignee's My Tasks list</span>
     </v-tooltip>
+    -->
         <!--
         <AssignTask v-show="!assigneechip" v-bind:currentAssignee="selectedTask.AssigneeUserId" v-on:assign-task="assignTask"></AssignTask>
         -->
+        
+
+        <v-select full-width
+                v-bind:items="selectedWs.MemberUserIds"
+                v-model="assigneeobject"
+                label="Assignee"                
+                chips
+                item-value="_id" item-text="name"
+                @input="assignTask"                
+              >
+                <template slot="selection" scope="data">
+                  <v-chip
+                    v-model="showassigneechip"
+                    close
+                    @input="data.parent.selectItem(data.item); assigneeobject=null;"
+                    :selected="data.selected"
+                    class="chip--select-multi"
+                    :key="JSON.stringify(data.item)"                    
+                  >
+                    <v-avatar class="teal">
+                      <span>{{data.item.name.charAt(0).toUpperCase()}}{{data.item.name.split(" ").pop().charAt(0).toUpperCase()}}</span>
+                    </v-avatar>
+                    {{ data.item.name }}
+                  </v-chip>
+                </template>                            
+              </v-select>
+
+        <!--
         <v-text-field
-            v-show="!assigneechip"
+            v-if="!assigneechip"
             v-model="assigneeusername"
             label="Enter assignee"
             @blur="assignTask"          
             :prepend-icon="'account_circle'"
             autofocus
         ></v-text-field>
+        -->
+
+
+        <v-menu
+        lazy
+        :close-on-content-click="false"
+        v-model="menu"
+        transition="scale-transition"
+        offset-y
+        full-width
+        :nudge-right="40"
+        max-width="290px"
+        min-width="290px"
+      >
+        <v-text-field
+          slot="activator"
+          label="Due Date"
+          v-model="date"
+          prepend-icon="event"
+          readonly
+        ></v-text-field>
+        <v-date-picker v-model="date" no-title scrollable actions>
+          <template scope="{ save, cancel }">
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn flat color="primary" @click="cancel">Cancel</v-btn>
+              <v-btn flat color="primary" @click="save">OK</v-btn>
+            </v-card-actions>
+          </template>
+        </v-date-picker>
+      </v-menu>
 
     </v-card-actions>
 
@@ -69,7 +131,7 @@
                 <v-icon large color="indigo">account_circle</v-icon>
               </v-list-tile-avatar>
               <v-list-tile-content>
-                <v-list-tile-title>{{comment.CommenterUserId}} <small>on {{new Date(comment.createdDateTime).toDateString()}}</small></v-list-tile-title>
+                <v-list-tile-title>{{comment.CommenterUserId.name}} <small>on {{new Date(comment.createdDateTime).toDateString()}}</small></v-list-tile-title>
                 <v-list-tile-sub-title><pre>{{comment.content}}</pre></v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
@@ -80,12 +142,12 @@
             <v-container fluid grid-list-md v-for="(comment,index) in taskComments" :key="index">
                 <v-layout row wrap>
                     <v-flex d-flex xs1 sm1>
-                        <v-avatar size="30px" class="indigo"><span class="white--text">{{comment.CommenterUserId.substring(0,1).toUpperCase()}}</span></v-avatar>
+                        <v-avatar size="30px" class="indigo"><span class="white--text">{{comment.CommenterUserId.name.charAt(0).toUpperCase()}}{{comment.CommenterUserId.name.split(" ").pop().charAt(0).toUpperCase()}}</span></v-avatar>
                     </v-flex>
                     <v-flex d-flex>
                         <v-layout row wrap>
                             <v-flex d-flex xs12>
-                                <strong class="text-sm-left">{{comment.CommenterUserId}}</strong> <small class="text-sm-right">on {{new Date(comment.createdDateTime).toDateString()}}</small>
+                                <strong class="text-sm-left">{{comment.CommenterUserId.name}}</strong> <small class="text-sm-right">on {{new Date(comment.createdDateTime).toDateString()}}</small>
                             </v-flex>
                             <v-flex d-flex xs12>
                                 <pre class="text-sm-left">{{comment.content}}</pre>
@@ -150,7 +212,11 @@
 			username: {
 				type: String,
 				required: true
-			}
+			},
+            selectedWs: {
+                type: Object,
+                required: true,
+            },
 		},
 
 		data(){
@@ -158,7 +224,13 @@
 				newcomment: '',
                 assigneechip: true,
                 assigneeusername:'',
-                showcommentbutton: false
+                showcommentbutton: false,
+                assigneeobject: this.selectedTask.AssigneeUserId,
+                showassigneechip: true,
+                //below are for datepicker
+                date: null,
+                menu: false,
+                modal: false
 			}
 		},
 
@@ -203,6 +275,27 @@
 			},
 
             assignTask(){
+                this.showassigneechip=true; 
+                console.log("assigneeobject:- "+JSON.stringify(this.assigneeobject));
+                //if(this.assigneeusername.length>0){
+                if(this.assigneeobject){
+                var assignTaskToUser = {
+                    operation: 'update',
+                    taskid: this.selectedTask._id,
+                    //AssigneeUserId: this.assigneeusername
+                    AssigneeUserId: this.assigneeobject
+                }
+                api.assignTaskToUser(assignTaskToUser)
+                    .then((resp)=>{
+                        console.log('assignTaskToUser response:- ' + JSON.stringify(resp));
+                        this.selectedTask.AssigneeUserId = this.assigneeobject;
+                    });
+                }
+                this.assigneechip=true;
+            },
+
+            /*
+            assignTask(){
                 if(this.assigneeusername.length>0){
                 var assignTaskToUser = {
                     operation: 'update',
@@ -217,6 +310,7 @@
                 }
                 this.assigneechip=true;
             },
+            */
 
             editTodo() {
                 console.log("editTodo() of Comments.vue called");               

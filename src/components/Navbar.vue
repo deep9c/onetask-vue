@@ -12,9 +12,10 @@
       </v-btn>
 
       <v-spacer></v-spacer>
-      <v-spacer slot="extension"></v-spacer><v-spacer slot="extension"></v-spacer>
-      <v-spacer slot="extension"></v-spacer><v-spacer slot="extension"></v-spacer>
-      <v-spacer slot="extension"></v-spacer><v-spacer slot="extension"></v-spacer>
+      <v-spacer slot="extension"></v-spacer>
+      <v-spacer slot="extension"></v-spacer>
+      <v-spacer slot="extension"></v-spacer>
+      
       <WorkspaceMembers slot="extension" v-bind:selectedWs='selectedWs' v-bind:username='username'></WorkspaceMembers>
 
       <v-menu offset-y>
@@ -25,7 +26,7 @@
           </v-list-tile>
           <v-divider light></v-divider>
           <v-list-tile @click="">
-            <v-list-tile-title><CreateWorkspace v-on:add-workspace='createWorkspace'></CreateWorkspace></v-list-tile-title>
+            <v-list-tile-title style="height:54px"><CreateWorkspace v-on:add-workspace='createWorkspace'></CreateWorkspace></v-list-tile-title>
           </v-list-tile>
         </v-list>
       </v-menu>
