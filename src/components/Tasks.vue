@@ -12,7 +12,8 @@
 
     	<v-list dense>
         <v-subheader>
-          <v-btn dark small round color="teal" @click="isCreatingProp=true">Add Task</v-btn>
+          <v-btn dark small round v-if="selectedWsId && selectedProj" color="teal" @click="isCreatingProp=true">Add Task</v-btn>
+          <div v-if="!selectedWsId || !selectedProj">Please add/select a Project at the left pane...</div>
         </v-subheader>
   
     		<todo v-on:delete-todo="deleteTodo" v-on:complete-todo="completeTodo" v-on:edit-todo="editTodo" 
@@ -20,7 +21,7 @@
       		v-bind:todo="todo" :key="index" :todo.sync="todo" v-on:select-task="selectTask">      
   			</todo>
   			<!-- todo.sync used for completeTodo function to work -->
-        <create-todo v-if="selectedWsId && selectedProj" v-on:add-todo="addTodo" v-on:falsify-creatingform="isCreatingProp=false"
+        <create-todo v-if="isCreatingProp" v-on:add-todo="addTodo" v-on:falsify-creatingform="isCreatingProp=false"
           v-bind:isCreatingProp="isCreatingProp"></create-todo>
     	</v-list>
                      

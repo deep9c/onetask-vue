@@ -9,7 +9,7 @@
   <v-list-tile-content>
     
   <v-text-field ref="createtaskinput"
-    v-if="isCreating"
+    v-if="isCreatingProp"
     v-model="titleText"              
     label="Write a new task name"
     @change="sendForm"
@@ -104,6 +104,7 @@ export default {
         this.description='';
       }
       this.isCreating = false;
+      this.$emit('falsify-creatingform', false);
     },
   },
 };
