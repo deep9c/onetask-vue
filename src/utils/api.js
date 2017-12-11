@@ -140,4 +140,18 @@ export default {
       return axios.put(nodeurl + '/api/task', assignTaskToUserInputs);
     },
 
+    uploadAttachment(formdata){      
+      return axios.post(nodeurl + '/api/attachment/' + formdata.get('taskid'), formdata);       
+    },
+
+    downloadAttachment(fileid,filename){      
+      //return axios.get(nodeurl + '/api/attachment/' + fileid);  
+
+      return axios.get(nodeurl + '/api/attachment/' + fileid, { responseType:"blob" })
+        .then(function (response) {
+        require('downloadjs')(response.data, filename);
+  
+});         
+    },
+
 }

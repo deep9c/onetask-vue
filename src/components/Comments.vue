@@ -3,32 +3,14 @@
 
 
 <v-card>
-    <v-card-actions>
-
-    <!--
-    <v-tooltip bottom>
-        
-            <v-chip close v-model="assigneechip" @input="" @click="assigneechip=false" v-show="assigneechip" slot="activator" style="cursor: pointer">
-                <v-avatar class="teal">
-                    <span class="white--text">{{selectedTask.AssigneeUserId.name.charAt(0).toUpperCase()}}{{selectedTask.AssigneeUserId.name.split(" ").pop().charAt(0).toUpperCase()}} </span>
-                </v-avatar>
-                {{selectedTask.AssigneeUserId.name}} 
-            </v-chip>
-        
-        <span>Assignee : </br>This task will appear in the </br> Assignee's My Tasks list</span>
-    </v-tooltip>
-    -->
-        <!--
-        <AssignTask v-show="!assigneechip" v-bind:currentAssignee="selectedTask.AssigneeUserId" v-on:assign-task="assignTask"></AssignTask>
-        -->
-        
+    <v-card-actions>                    
 
         <v-select full-width
                 v-bind:items="selectedWs.MemberUserIds"
+                item-value="_id" item-text="name"
                 v-model="assigneeobject"
                 label="Assignee"                
-                chips
-                item-value="_id" item-text="name"
+                chips                
                 @input="assignTask"                
               >
                 <template slot="selection" scope="data">
@@ -41,24 +23,14 @@
                     :key="JSON.stringify(data.item)"                    
                   >
                     <v-avatar class="teal">
-                      <span>{{data.item.name.charAt(0).toUpperCase()}}{{data.item.name.split(" ").pop().charAt(0).toUpperCase()}}</span>
+                      <span>{{selectedTask.AssigneeUserId.name.charAt(0).toUpperCase()}}{{selectedTask.AssigneeUserId.name.split(" ").pop().charAt(0).toUpperCase()}}</span>
                     </v-avatar>
-                    {{ data.item.name }}
+                    {{ selectedTask.AssigneeUserId.name }}
                   </v-chip>
                 </template>                            
-              </v-select>
+              </v-select>        
 
-        <!--
-        <v-text-field
-            v-if="!assigneechip"
-            v-model="assigneeusername"
-            label="Enter assignee"
-            @blur="assignTask"          
-            :prepend-icon="'account_circle'"
-            autofocus
-        ></v-text-field>
-        -->
-
+        
 
         <v-menu
         lazy
@@ -77,6 +49,7 @@
           v-model="date"
           prepend-icon="event"
           readonly
+          v-bind:style="{ width:'140px' }"
         ></v-text-field>
         <v-date-picker v-model="date" no-title scrollable actions>
           <template scope="{ save, cancel }">
@@ -89,8 +62,18 @@
         </v-date-picker>
       </v-menu>
 
-    </v-card-actions>
+      <v-btn outline small fab color="teal" v-on:click='$refs.fileInput.click();'>
+            <v-icon>attach_file</v-icon>
+        </v-btn>
 
+    </v-card-actions>
+        
+
+
+    <input type="file" name="attachment" id="file-upload" v-show="false"
+      @change="uploadAttachment($event)" ref="fileInput">
+    
+    
 
     <v-card-text>
         <div class="headline">
@@ -120,23 +103,18 @@
                 textarea
                 auto-grow
                 rows="1"
-              ></v-text-field>                    
+              ></v-text-field>   
+
+              <div>
+                <v-btn left small flat color="primary" v-bind:style="{ textTransform: 'none' }" 
+                    v-for="(attachment,index) in selectedTask.attachments" :key="index"
+                    v-on:click='downloadAttachment(attachment._id,attachment.filename)'>
+                    {{attachment.filename}}
+                 </v-btn>
+            </div>                 
         </div>
         <v-divider></v-divider>
-
-        <!--
-        <v-list three-line>         
-            <v-list-tile avatar v-for="(comment,index) in taskComments">                
-              <v-list-tile-avatar size="36px">
-                <v-icon large color="indigo">account_circle</v-icon>
-              </v-list-tile-avatar>
-              <v-list-tile-content>
-                <v-list-tile-title>{{comment.CommenterUserId.name}} <small>on {{new Date(comment.createdDateTime).toDateString()}}</small></v-list-tile-title>
-                <v-list-tile-sub-title><pre>{{comment.content}}</pre></v-list-tile-sub-title>
-              </v-list-tile-content>
-            </v-list-tile>
-        </v-list>
-        -->    
+          
         
         <v-card-title>
             <v-container fluid grid-list-md v-for="(comment,index) in taskComments" :key="index">
@@ -167,61 +145,41 @@
             <v-btn small dark color="teal" v-on:click='submit($event)' v-if=showcommentbutton>Comment</v-btn>
         </v-card-actions>
     </v-card-text>
-
-
-
-    <!--
-    <div class="actionBox">
-        <form class="form-inline" role="form">
-            <div class="form-group">
-                <input class="form-control" type="text" id="box" style="width: 300px; height: 20px" placeholder="Your comments" 
-                    v-model="newcomment" v-on:focus='textboxFocus($event)' v-on:blur='textboxBlur($event)'/>
-            </div>
-            <div class="form-group">
-                <!-- <button class="btn btn-default" v-on:click='submit($event)'>Add</button> ->
-                <input type="submit" class="btn btn-default" 
-                        	value="Add" v-on:click='submit($event)'>
-            </div>
-        </form>
-    </div>
-    -->
+    
 </v-card>
 
 </template>
 
 <script>
-	import api from '../utils/api'
+    import api from '../utils/api'
     import AssignTask from './AssignTask'
-
-	export default{
-		name: 'Comments',
-
+    export default{
+        name: 'Comments',
         components: {
             AssignTask,
         },
-		
-		props: {
-			selectedTask: {
-				type: Object,
-				required: true
-			},
-			taskComments: {
-				type: Array,
-				required: true
-			},
-			username: {
-				type: String,
-				required: true
-			},
+        
+        props: {
+            selectedTask: {
+                type: Object,
+                required: true
+            },
+            taskComments: {
+                type: Array,
+                required: true
+            },
+            username: {
+                type: String,
+                required: true
+            },
             selectedWs: {
                 type: Object,
                 required: true,
             },
-		},
-
-		data(){
-			return{				
-				newcomment: '',
+        },
+        data(){
+            return{             
+                newcomment: '',
                 assigneechip: true,
                 assigneeusername:'',
                 showcommentbutton: false,
@@ -230,50 +188,52 @@
                 //below are for datepicker
                 date: null,
                 menu: false,
-                modal: false
-			}
-		},
-
-		methods: {
-			submit(e){
+                modal: false,
+                        
+            }
+        },
+        methods: {
+            submit(e){
                 console.log("comment button clicked");
-				e.preventDefault();
-				var submitcommentreq = {
-					content: this.newcomment,
-					TaskId: this.selectedTask._id,
-					CommenterUserId: this.username
-				};
-
-				api.createComment(submitcommentreq)
-					.then((resp)=>{
-						console.log('createComment resp:- ' + JSON.stringify(resp));
-						this.taskComments.push(resp.data);
-						this.newcomment = '';
-					});
-				
-			},
-
-			textboxFocus(e){
-				$(e.currentTarget).animate({
-    				//width: '300px',
-    				height: '100px'
-  				}, 100, function() {
-    			// Animation complete.
-  				});
+                e.preventDefault();
+                var submitcommentreq = {
+                    content: this.newcomment,
+                    TaskId: this.selectedTask._id,
+                    CommenterUserId: this.username
+                };
+                api.createComment(submitcommentreq)
+                    .then((resp)=>{
+                        console.log('createComment resp:- ' + JSON.stringify(resp));
+                        this.taskComments.push(resp.data);
+                        this.newcomment = '';
+                    });
+                
+            },
+            downloadAttachment(fileid,filename){
+                api.downloadAttachment(fileid,filename)
+                    .then((resp)=>{
+                        console.log("downloadAttachment resp:- " + JSON.stringify(resp));                                                
+                    });
+            },
+            textboxFocus(e){
+                $(e.currentTarget).animate({
+                    //width: '300px',
+                    height: '100px'
+                }, 100, function() {
+                // Animation complete.
+                });
                 this.showcommentbutton=true;
-			},
-
-			textboxBlur(e){
-				$(e.currentTarget).animate({
-     				//width: '300px',
-     				height: '30px'
-   				}, 100, function() {
-     			// Animation complete.
-   			  });
+            },
+            textboxBlur(e){
+                $(e.currentTarget).animate({
+                    //width: '300px',
+                    height: '30px'
+                }, 100, function() {
+                // Animation complete.
+              });
                 if(this.newcomment.length==0)
                     this.showcommentbutton=false;
-			},
-
+            },
             assignTask(){
                 this.showassigneechip=true; 
                 console.log("assigneeobject:- "+JSON.stringify(this.assigneeobject));
@@ -288,12 +248,11 @@
                 api.assignTaskToUser(assignTaskToUser)
                     .then((resp)=>{
                         console.log('assignTaskToUser response:- ' + JSON.stringify(resp));
-                        this.selectedTask.AssigneeUserId = this.assigneeobject;
+                        this.selectedTask.AssigneeUserId = resp.data.AssigneeUserId;
                     });
                 }
                 this.assigneechip=true;
             },
-
             /*
             assignTask(){
                 if(this.assigneeusername.length>0){
@@ -311,7 +270,6 @@
                 this.assigneechip=true;
             },
             */
-
             editTodo() {
                 console.log("editTodo() of Comments.vue called");               
                 var updateTaskInputs = {
@@ -325,16 +283,42 @@
                         console.log('updateTask resp');
                     });
             },
-		},
 
-		beforeUpdate(){
-			
-		},
-	}	
+            uploadAttachment(event) {
+                console.log("uploadAttachment called");
+                let input = event.target;
+                if (input.files[0]) {
+                    console.log("aaaaa");
+      
+      
+                    let reader = new FileReader();
 
+                    
+
+                    reader.readAsDataURL(input.files[0]);
+                    
+                    var formDataVar = new FormData();
+
+                    formDataVar.append('attachment', event.target.files[0], event.target.files[0].name);
+                    formDataVar.append('taskid', this.selectedTask._id);
+
+                    api.uploadAttachment(formDataVar)
+                    .then((resp)=>{
+                        console.log('uploadAttachment resp' + JSON.stringify(resp));
+                        this.selectedTask.attachments.push(resp.data);
+                    });
+                    
+                    //this.formData = new FormData();
+                }
+            },
+        },  //end of methods
+
+        beforeUpdate(){
+            
+        },
+    }   
 </script>
 
 
 <style>
-
 </style>

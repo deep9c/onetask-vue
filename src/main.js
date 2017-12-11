@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 //import 'vue-material/dist/vue-material.css'
+import('../node_modules/vuetify/dist/vuetify.min.css')
 
 import Vuetify from 'vuetify'
 Vue.use(Vuetify)
