@@ -151,7 +151,11 @@ export default {
         .then(function (response) {
         require('downloadjs')(response.data, filename);
   
-});         
+      });         
+    },
+
+    sendChat(message){
+      return axios.get(nodeurl + '/api/chatbot/' + message);
     },
 
 }

@@ -75,8 +75,10 @@
                 <v-card-text class="px-0">6</v-card-text>
               </v-card>
               -->
+              <br/><br/><br/><br/>
+              
             </v-flex>
-
+            <ChatBox></ChatBox>
           </v-layout>          
         </v-container>
       </v-content>
@@ -100,6 +102,7 @@ import Navbar from './Navbar'
 import Sidebar from './Sidebar'
 import Tasks from './Tasks'
 import Comments from './Comments'
+import ChatBox from './ChatBox'
 import api from '../utils/api'
 
 export default {
@@ -110,7 +113,8 @@ export default {
     Navbar,
     Sidebar,
     Tasks,
-    Comments
+    Comments,
+    ChatBox
   },
   data () {
     return {

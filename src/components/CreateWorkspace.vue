@@ -2,7 +2,7 @@
   <v-layout row justify-center>
     <v-dialog v-model="dialog" persistent max-width="500px">
       <v-btn slot="activator" fab small flat class='text-xs-center' v-on:click="openForm">
-        <v-icon>person_add</v-icon>
+        <v-icon>add</v-icon>
       </v-btn>
       <v-card>
         <v-card-title>
