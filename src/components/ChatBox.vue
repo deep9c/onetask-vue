@@ -1,19 +1,5 @@
 <template>
-    <div>
-
-      <!--<div id="ChatBox">
-        <div class="col-md-9 ChatBox__Left">
-            <div class="ChatBox__List">
-                <chat-message v-for="message in messages" :data="message"></chat-message>
-            </div>
-
-            <div class="ChatBox__Input">
-                <form @submit="sendMessage" action="/" method="post">
-                    <input type="text" v-model="newMessage" placeholder="Enter your message here">
-                </form>
-            </div>
-        </div>
-      </div>-->
+    <div>      
 
       <div id="chat">
     <div id="conversation">
@@ -42,7 +28,7 @@
         data() {
             return {
                 newMessage: '',
-                messages: [],
+                messages: [{from:'bot', txt:api.chatbot.welcomemsg}],
                 onlineUsers: [],
                 socket: null,
 
@@ -75,22 +61,19 @@
                 //this.socket.emit('send message', this.newMessage)                
                 //this.newMessage = ''
                 this.messages.push({from:"me",txt:this.newMessage});
-                var newMessage = this.newMessage;
+                var newMessage = {passage:this.newMessage};
                 this.newMessage = '';
                 api.sendChat(newMessage)
                     .then((resp)=>{
                         console.log('sendChat resp-> ' + JSON.stringify(resp.data));
-                        this.messages.push({from:"bot",txt:resp.data.msg});
+                        var bot_reply = resp.data['Question: '];
+                        if(bot_reply==null) bot_reply='OK, I will send you some flights to choose from.'
+                        this.messages.push({from:"bot",txt:bot_reply});
 
-                        //var element = document.getElementById("conversation");
-                        //element.scrollTop = element.scrollHeight;
+                        var element = document.getElementById("conversation");
+                        element.scrollTop = element.scrollHeight;
 
-                        var out = document.getElementById("conversation");
-                        // allow 1px inaccuracy by adding 1
-                        var isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
-
-                        if(isScrolledToBottom)
-                            out.scrollTop = out.scrollHeight - out.clientHeight;
+                        
                     });
 
             },
@@ -119,8 +102,8 @@
   bottom:0;
   display:inline-block;
   box-shadow: 2px 2px 5px black;
-  width:200px;
-  height:360px;
+  width:400px;
+  height:420px;
   background-color:#eee;
   border: 1px solid #fff;
 }
@@ -130,7 +113,7 @@
 #conversation{
   display:block;
   width:100%;
-  height:310px;
+  height:370px;
   overflow:auto;
   background-color:#eee;
 }
@@ -141,7 +124,9 @@
   display:block;
   text-align:center;
   padding:10px;
+  background-color:#FBFBFB;
 }
+#texting * {width:100%;}
 /* End Texting TAG */
 
 /* Start message TAG */
@@ -154,18 +139,23 @@
 
 #message{
   display:block;
-  float:left;
   max-width:80%;
   padding:5px 10px;
   margin:5px;
   color:#fff;
-  background-color:#00c6da;
   border-radius:10px;
 }
 
-.message.me{
+.bot{
+  float:left;
+  max-width:80%;
+  background-color:#00c6da;
+}
+
+.me{
   float:right;
-  background-color:#EE4622;
+  max-width:80%;
+  background-color:#ee591f;
 }
 /* End message TAG */
 

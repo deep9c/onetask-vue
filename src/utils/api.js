@@ -12,6 +12,12 @@ export default {
       userdetails: {}
 	},
 
+  chatbot: {
+      uri: 'http://10.13.45.48:5000',
+      connected: true,
+      welcomemsg:"Hi there, how may I help you?",
+  },
+
 	login(creds) {
 		return axios.post(nodeurl + '/auth/login', creds)	//{ username: credentials.username, password: credentials.password }
           .then((response)=>{
@@ -66,7 +72,20 @@ export default {
       				}
     			})
   			});
-
+        axios.get(api.chatbot.uri, {withCredentials:false})
+          .then((resp)=>{
+            console.log("Chatbot initialised: " + JSON.stringify(resp));
+            if(resp.status != 200){
+              api.chatbot.connected = false;
+              api.chatbot.welcomemsg = "We are not online currently. Let's chat later!";// resp.data;
+            }
+          })
+          .catch((error)=>{
+            console.log("chatbot URI not working");
+            api.chatbot.connected = false;
+            api.chatbot.welcomemsg = "We are not online currently. Let's chat later!";// resp.data;
+          });
+        //console.log("Chatbot initialisation request sent");
   	},
 
   	checkLoggedout(to, from, next){
@@ -154,8 +173,15 @@ export default {
       });         
     },
 
+    initialiseChat(){
+      
+    },
+
     sendChat(message){
-      return axios.get(nodeurl + '/api/chatbot/' + message);
+      //return axios.get(nodeurl + '/api/chatbot/' + message);
+      console.log("sendChat request: " + JSON.stringify(message));
+      var querystring = require('querystring');
+      return axios.post(this.chatbot.uri+'/predict', querystring.stringify(message), {withCredentials:false});
     },
 
 }
