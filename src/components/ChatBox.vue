@@ -4,7 +4,7 @@
       <div id="chat">
     <div id="conversation">
       <div id="message-line" v-for="message in messages">
-        <div id="message" :class="message.from">{{message.txt}}</div>
+        <div id="message" :class="message.from"><span v-html="message.txt"></span></div>
       </div>
     </div>
     <div id="texting">
@@ -63,11 +63,37 @@
                 this.messages.push({from:"me",txt:this.newMessage});
                 var newMessage = {passage:this.newMessage};
                 this.newMessage = '';
+                var flightsarray = [];
                 api.sendChat(newMessage)
                     .then((resp)=>{
                         console.log('sendChat resp-> ' + JSON.stringify(resp.data));
                         var bot_reply = resp.data['Question: '];
-                        if(bot_reply==null) bot_reply='OK, I will send you some flights to choose from.'
+                        if(bot_reply==null){ 
+                          bot_reply='OK, I will send you some flights to choose from.'
+                          //End of conversation! Call 3rd party Flights API.
+                          var fromcity = resp.data['From where do you want to leave?'].answer;
+                          var tocity = resp.data['Where do you want to go?'].answer;
+                          var passengers = resp.data['How many tickets do you want?'].answer;
+                          var traveldate = resp.data['When do you want to depart?'].answer;
+                          api.getFlights(fromcity,tocity,passengers,traveldate)
+                            .then((flightresp)=>{
+                              //console.log('getFlights resp-> '+JSON.stringify(flightresp.data));
+                              flightresp.data.data.map((flightdata)=>{
+                                var flightarrayEntry = '';
+                                flightdata.route.map((route)=>{
+                                  flightarrayEntry += route.cityFrom + ' to ' + route.cityTo + ' (' + route.airline+' '+route.flight_no +') <br/>';
+                                });
+                                flightarrayEntry += 'Price:- USD ' + flightdata.price;
+                                flightsarray.push(flightarrayEntry);
+
+                                this.messages.push({from:"bot",txt:flightarrayEntry});
+                              });
+
+
+
+                            });
+
+                        }
                         this.messages.push({from:"bot",txt:bot_reply});
 
                         var element = document.getElementById("conversation");

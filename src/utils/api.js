@@ -184,4 +184,13 @@ export default {
       return axios.post(this.chatbot.uri+'/predict', querystring.stringify(message), {withCredentials:false});
     },
 
+    getFlights(fromcity,tocity,passengers,traveldate){
+      //return axios.get(nodeurl + '/api/chatbot/' + message);
+      var query = 'https://api.skypicker.com/flights?flyFrom='+fromcity+'&to='+tocity+'&dateFrom='+traveldate+'&dateTo='+traveldate+'&passengers='+passengers+'&curr=USD'; //&typeFlight=oneway&oneforcity=1
+
+      console.log("getFlights request: " + query);
+      var querystring = require('querystring');
+      return axios.get(query, {withCredentials:false});
+    },
+
 }
