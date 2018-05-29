@@ -2,6 +2,9 @@
     <div>      
 
       <div id="chat">
+      <div id="chathead" @click="clickChatHead($event)">
+        <b>Chat Bot</b>
+    </div>
     <div id="conversation">
       <div id="message-line" v-for="message in messages">
         <div id="message" :class="message.from"><span v-html="message.txt"></span></div>
@@ -28,7 +31,8 @@
         data() {
             return {
                 newMessage: '',
-                messages: [{from:'bot', txt:api.chatbot.welcomemsg}],
+                messages: [],
+                chatopened: false,
                 onlineUsers: [],
                 socket: null,
 
@@ -100,7 +104,10 @@
                         element.scrollTop = element.scrollHeight;
 
                         
-                    });
+                    })
+                    .catch((error)=>{
+                              this.messages.push({from:"bot",txt:"We are not online currently. Let's chat later!"});
+                            });
 
             },
             kickUser(event) {
@@ -109,6 +116,28 @@
                 let usernameToKick = event.target.getAttribute('data-username')
                 // Tell the server to kick them from the chat
                 this.socket.emit('kick user', usernameToKick)
+            },
+            clickChatHead(event){
+              //console.log("chathead clicked");
+              //var ele_conv = document.getElementById("conversation");
+              //var ele_txt = document.getElementById("texting");
+              var ele_chat = document.getElementById("chat");
+              if(this.chatopened){
+                //ele_conv.style.display = "none";
+                //ele_txt.style.display = "none";
+                ele_chat.style.height = "20px";
+                this.chatopened = false;
+              }
+              else{
+                //ele_conv.style.display = "block";
+                //ele_txt.style.display = "block";
+                ele_chat.style.height = "420px"; 
+                this.messages = [];
+                if(this.messages.length==0){
+                  this.messages.push({from:'bot', txt:api.chatbot.welcomemsg});
+                }
+                this.chatopened = true;
+              }
             }
         },
         computed: {
@@ -129,7 +158,7 @@
   display:inline-block;
   box-shadow: 2px 2px 5px black;
   width:400px;
-  height:420px;
+  height:20px;
   background-color:#eee;
   border: 1px solid #fff;
 }
@@ -139,7 +168,7 @@
 #conversation{
   display:block;
   width:100%;
-  height:370px;
+  height:360px;
   overflow:auto;
   background-color:#eee;
 }
@@ -154,6 +183,14 @@
 }
 #texting * {width:100%;}
 /* End Texting TAG */
+
+#chathead{
+  display:block;
+  text-align:center;
+  padding:0px;
+  background-color:#4487A6;
+}
+#chathead * {width:100%;}
 
 /* Start message TAG */
 #message-line{

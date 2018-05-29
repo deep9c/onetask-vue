@@ -28,6 +28,7 @@
             </v-layout>
           </v-container>
           <small>*indicates required field</small>
+          <div>{{errormsg}}</div>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -52,6 +53,7 @@ export default {
       usernameText: '',      
       isCreating: false,
       dialog: false,
+      errormsg: '',
     };
   },
 
@@ -69,12 +71,14 @@ export default {
   methods: {
     openForm() {
       //console.log("open form");
+      this.errormsg='';
       this.isCreating = true;
       console.log('selectedws= '+JSON.stringify(this.selectedWs));
     },
     closeForm() {
       //this.isCreating = false;
       this.dialog = false;
+      this.errormsg='';
     },
     addMember() {
       //console.log("send form " + this.usernameText.length);
@@ -90,16 +94,27 @@ export default {
           userid: this.usernameText
         }
         api.addWorkspaceMember(addWorkspaceMemberInputs)
-          .then((resp)=>{
+          .then((resp)=>{            
             console.log('addWorkspaceMember response:- ' + JSON.stringify(resp));
-            this.selectedWs.MemberUserIds.push(resp.data);
+            if(resp.status==200){
+              this.selectedWs.MemberUserIds.push(resp.data);
+              this.dialog = false;
+              this.errormsg='';
+            }
+            else if(resp.status==204){
+              this.errormsg='User not found!';
+            }
+          })
+          .catch((err)=>{
+            console.log('addWorkspaceMember error!');
+            this.errormsg='Error!';
           });
 
 
         this.usernameText='';
       }
       //this.isCreating = false;
-      this.dialog = false;
+      
     },
   },
 };
